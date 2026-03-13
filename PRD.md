@@ -6,7 +6,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 # CommitBee Web — Product Requirements Document
 
-**Version**: 1.3
+**Version**: 1.4
 **Date**: 2026-03-13
 **Status**: Phase 1 Implemented
 **Author**: [Sephyi](https://github.com/Sephyi) + [Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)
@@ -18,6 +18,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.4 | 2026-03-13 | Replace ScrollObserver island with inline script in app.rs shell (FR-023 rewrite), copy buttons on landing page install section (FR-006/FR-014), remove nonexistent asset links from HTML shell, architecture file tree update |
 | 1.3 | 2026-03-13 | Tailwind v4 CSS-first migration, ScrollObserver island (FR-023 complete), CSS hash resolution, architecture updates |
 | 1.2 | 2026-03-13 | Fix stale wget reference in FR-030 (now Rust prerender binary), document bin-target requirement in FR-031, add CLAUDE.md |
 | 1.1 | 2026-03-13 | Phase 1 implemented — all FRs built, Leptos 0.8 (was 0.7+), cross-platform Rust prerender binary, web-sys non-optional for island compatibility |
@@ -95,7 +96,7 @@ commitbee-web/
 │   ├── bin/
 │   │   └── prerender.rs      # Cross-platform static HTML pre-renderer
 │   ├── lib.rs                # Leptos app root + hydrate entry
-│   ├── app.rs                # Router + HTML shell
+│   ├── app.rs                # Router + HTML shell (includes inline scroll-reveal script)
 │   ├── pages/
 │   │   ├── landing.rs        # Hero + all landing sections
 │   │   ├── docs.rs           # Doc page renderer
@@ -109,8 +110,7 @@ commitbee-web/
 │   │   ├── doc_search.rs     # Fuzzy search island
 │   │   ├── doc_sidebar.rs    # Docs sidebar navigation
 │   │   ├── doc_toc.rs        # Right-side table of contents
-│   │   ├── scroll_reveal.rs  # Scroll animation wrapper (SSR)
-│   │   └── scroll_observer.rs # IntersectionObserver island (adds .visible)
+│   │   └── scroll_reveal.rs  # Scroll animation wrapper (SSR)
 │   └── content/
 │       └── loader.rs         # Build-time markdown loader + frontmatter
 ├── content/
@@ -164,7 +164,7 @@ CI pre-render (cross-platform Rust binary, zero shell deps):
 | `syntect` | Syntax highlighting |
 | `serde` + `serde_yaml` | Frontmatter parsing |
 | `tower-http` | Static file serving, compression |
-| `wasm-bindgen` + `web-sys` | Browser API access (localStorage, IntersectionObserver, Clipboard) — non-optional because `#[island]` macro does not cfg-gate the body |
+| `wasm-bindgen` + `web-sys` | Browser API access (localStorage, Clipboard) — non-optional because `#[island]` macro does not cfg-gate the body. IntersectionObserver is now handled by inline script, not WASM. |
 
 ## 4. Feature Requirements
 
@@ -208,7 +208,7 @@ Stylized comparison of commitbee vs. the field on key features. Layered card des
 
 #### FR-006: Install and Quick Start
 
-Terminal-style code blocks with copy-to-clipboard buttons. Shows `cargo install commitbee`, `brew install sephyi/tap/commitbee`, and the zero-config first-run experience. Animated terminal showing the first-run flow.
+Terminal-style code blocks with copy-to-clipboard buttons. Shows `cargo install commitbee`, `brew install sephyi/tap/commitbee`, and the zero-config first-run experience. Animated terminal showing the first-run flow. Copy buttons implemented on all install section terminal blocks using `.copy-btn` pattern with `data-code` attributes, activated by a `CodeBlockActivator` island on the landing page.
 
 #### FR-007: Docs Transition Gateway
 
@@ -255,7 +255,7 @@ Client-side fuzzy search over pre-built search index. `Cmd+K` / `Ctrl+K` keyboar
 
 #### FR-014: Code Blocks
 
-Syntax-highlighted code blocks via `syntect` (rendered at build time). Copy-to-clipboard button on each block. Language label displayed. Bee-themed syntax color scheme for both light and dark modes.
+Syntax-highlighted code blocks via `syntect` (rendered at build time). Copy-to-clipboard button on each block. Language label displayed. Bee-themed syntax color scheme for both light and dark modes. Copy-to-clipboard implemented on both docs pages and landing page install section terminal blocks using `.copy-btn` with `data-code` attributes.
 
 #### FR-015: Table of Contents
 
@@ -281,7 +281,18 @@ Inter for headings and body text. JetBrains Mono for code. Self-hosted fonts in 
 
 #### FR-023: Scroll Animations
 
-`IntersectionObserver` via `ScrollObserver` `#[island]` as the baseline implementation (works in all browsers). A single island instance observes all `.reveal` / `.reveal-left` / `.reveal-right` / `.reveal-scale` elements and adds `.visible` on intersection. CSS `animation-timeline: scroll()` as progressive enhancement for Chromium browsers. Motion style: fade-up and slide-in, smooth and organic. Respects `prefers-reduced-motion` — all animations disabled when set.
+Scroll reveal is handled by an inline `<script>` in the HTML shell (`src/app.rs`), not a WASM island. The previous `ScrollObserver` `#[island]` approach was replaced because it blocked SSR content — all `.reveal` elements remained invisible until WASM hydrated, defeating the purpose of pre-rendering.
+
+The inline script implementation:
+
+- **Above-fold elements** are revealed synchronously via `getBoundingClientRect()` viewport check (no transition delay, content visible on first paint)
+- **Below-fold elements** are animated via `IntersectionObserver` as they scroll into view
+- **SPA route changes** are handled by a `MutationObserver` that re-scans for new `.reveal` elements
+- **No-JS fallback**: a `<noscript><style>` block makes all `.reveal` content visible without JavaScript
+
+Supports `.reveal`, `.reveal-left`, `.reveal-right`, `.reveal-scale` classes, adding `.visible` on intersection. CSS `animation-timeline: scroll()` remains as progressive enhancement for Chromium browsers. Motion style: fade-up and slide-in, smooth and organic. Respects `prefers-reduced-motion` — all animations disabled when set.
+
+`src/components/scroll_observer.rs` has been deleted. The file tree no longer includes it.
 
 #### FR-024: Hexagonal Motifs
 
@@ -319,7 +330,7 @@ No API keys, credentials, or secrets in the codebase. The site is entirely stati
 
 ### SR-002: Content Security
 
-Self-hosted fonts and assets only. No external script dependencies. No third-party analytics or tracking by default. Content-Security-Policy headers via `<meta>` tag in HTML shell.
+Self-hosted fonts and assets only. No external script dependencies. No third-party analytics or tracking by default. Content-Security-Policy headers via `<meta>` tag in HTML shell. Only `favicon.svg` is referenced (no `apple-touch-icon` or `favicon.ico` links — those files do not exist in `public/images/`).
 
 ### SR-003: Dependency Auditing
 

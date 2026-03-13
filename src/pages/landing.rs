@@ -76,7 +76,7 @@ fn HeroSection() -> impl IntoView {
                             <div class="w-3 h-3 rounded-full bg-green-400/60"/>
                             <span class="ml-2 text-xs text-comb">"~/project"</span>
                         </div>
-                        <div class="p-4 font-mono text-sm text-bark">
+                        <div class="p-4 font-mono text-sm text-bark text-left">
                             <div class="text-comb">"$ commitbee"</div>
                             <div class="mt-2 text-comb">"Analyzing 3 staged files..."</div>
                             <div class="text-comb">"Extracting symbols (tree-sitter)..."</div>
