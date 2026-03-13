@@ -76,4 +76,82 @@
   }
 }
 
+@layer components {
+  .prose {
+    @apply text-bark leading-relaxed;
+  }
+
+  .prose h1 {
+    @apply text-3xl font-bold mt-0 mb-6;
+  }
+
+  .prose h2 {
+    @apply text-2xl font-semibold mt-12 mb-4 pb-2 border-b border-honey/10;
+  }
+
+  .prose h3 {
+    @apply text-xl font-semibold mt-8 mb-3;
+  }
+
+  .prose h4 {
+    @apply text-lg font-medium mt-6 mb-2;
+  }
+
+  .prose p {
+    @apply my-4;
+  }
+
+  .prose a {
+    @apply text-honey hover:underline;
+  }
+
+  .prose ul {
+    @apply my-4 pl-6 list-disc;
+  }
+
+  .prose ol {
+    @apply my-4 pl-6 list-decimal;
+  }
+
+  .prose li {
+    @apply my-1;
+  }
+
+  .prose code:not(pre code) {
+    @apply rounded bg-pollen px-1.5 py-0.5 text-sm font-mono;
+  }
+
+  .prose pre {
+    @apply my-6 rounded-lg bg-pollen p-4 overflow-x-auto;
+  }
+
+  .prose blockquote {
+    @apply my-4 border-l-4 border-honey/30 pl-4 italic text-comb;
+  }
+
+  .prose table {
+    @apply my-6 w-full border-collapse;
+  }
+
+  .prose th {
+    @apply border-b border-honey/20 px-4 py-2 text-left font-semibold;
+  }
+
+  .prose td {
+    @apply border-b border-honey/5 px-4 py-2;
+  }
+
+  .prose hr {
+    @apply my-8 border-honey/10;
+  }
+
+  .prose strong {
+    @apply font-semibold;
+  }
+
+  .prose img {
+    @apply my-6 rounded-lg;
+  }
+}
+
 @import "./animations.css";

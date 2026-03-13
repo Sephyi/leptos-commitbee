@@ -33,8 +33,9 @@ pub fn Nav() -> impl IntoView {
                     </a>
                 </div>
 
-                // Right side: theme toggle + mobile menu
+                // Right side: search + theme toggle + mobile menu
                 <div class="flex items-center gap-3">
+                    <super::doc_search::DocSearch/>
                     <super::theme_toggle::ThemeToggle/>
 
                     // Mobile hamburger

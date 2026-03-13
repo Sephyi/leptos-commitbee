@@ -43,6 +43,9 @@ pub fn DocsPage() -> impl IntoView {
                                 <div inner_html=page.html_content/>
                             </article>
 
+                            // Activate copy buttons on code blocks
+                            <crate::components::code_block::CodeBlockActivator/>
+
                             // Prev/next navigation
                             <nav class="mt-12 flex justify-between border-t border-honey/10 pt-6">
                                 {prev.map(|p| view! {
