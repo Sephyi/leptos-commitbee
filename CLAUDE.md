@@ -45,6 +45,8 @@ mise run build        # Production build (server + WASM)
 | `PipelineDemo` | `#[island]` | Yes | Animated 7-step pipeline walkthrough |
 | `CodeBlockActivator` | `#[island]` | Yes | Attaches copy-to-clipboard to `.copy-btn` elements |
 | `DocSearch` | `#[island]` | Yes | Cmd+K fuzzy search modal, lazy-loads search index |
+| `MobileMenu` | `#[island]` | Yes | Slide-out mobile navigation with backdrop and Escape key |
+| `TocHighlighter` | `#[island]` | Yes | Scroll-spy TOC highlighting via IntersectionObserver |
 | `Nav` | `#[component]` | No | Sticky glassmorphism navigation header |
 | `Footer` | `#[component]` | No | Site footer with hex-bg pattern |
 | `ScrollReveal` | `#[component]` | No | Wraps children in `.reveal` div for scroll animation |
