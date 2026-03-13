@@ -6,7 +6,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 # CommitBee Web — Product Requirements Document
 
-**Version**: 1.4
+**Version**: 1.5
 **Date**: 2026-03-13
 **Status**: Phase 1 Implemented
 **Author**: [Sephyi](https://github.com/Sephyi) + [Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)
@@ -18,6 +18,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.5 | 2026-03-13 | Fix nested `<pre>` in docs code blocks (build.rs strips syntect wrapper), unified code block styling (#2b303b background), View Transitions API for cross-document navigation, link prefetching on hover, redesigned sticky doc sidebar, copy-to-clipboard buttons on docs code blocks via code-block-wrapper in build.rs, confirm ScrollObserver WASM island fully replaced by inline script (Claude) |
 | 1.4 | 2026-03-13 | Replace ScrollObserver island with inline script in app.rs shell (FR-023 rewrite), copy buttons on landing page install section (FR-006/FR-014), remove nonexistent asset links from HTML shell, architecture file tree update |
 | 1.3 | 2026-03-13 | Tailwind v4 CSS-first migration, ScrollObserver island (FR-023 complete), CSS hash resolution, architecture updates |
 | 1.2 | 2026-03-13 | Fix stale wget reference in FR-030 (now Rust prerender binary), document bin-target requirement in FR-031, add CLAUDE.md |
@@ -68,7 +69,7 @@ The site tells the story of how CommitBee understands code through scroll-driven
 | Framework | Leptos 0.8 (islands) | SSR with surgical WASM hydration |
 | Server | Axum | Build-time HTML rendering (not deployed) |
 | Build tool | cargo-leptos | Parallel server/client compilation |
-| Styling | Tailwind CSS v4 | CSS-first config (`@theme` tokens, no JS config) with dark mode |
+| Styling | Tailwind CSS v4 | CSS-first config (`@theme` tokens, no JS config) with dark mode, `@view-transition` for cross-document navigation |
 | Markdown | pulldown-cmark | Build-time markdown to HTML |
 | Syntax highlighting | syntect | Rust-native, bee-themed color scheme |
 | Task runner | mise | Dev/build/content task orchestration |
@@ -96,7 +97,7 @@ commitbee-web/
 │   ├── bin/
 │   │   └── prerender.rs      # Cross-platform static HTML pre-renderer
 │   ├── lib.rs                # Leptos app root + hydrate entry
-│   ├── app.rs                # Router + HTML shell (includes inline scroll-reveal script)
+│   ├── app.rs                # Router + HTML shell (includes inline scroll-reveal + link prefetch scripts)
 │   ├── pages/
 │   │   ├── landing.rs        # Hero + all landing sections
 │   │   ├── docs.rs           # Doc page renderer
@@ -116,7 +117,7 @@ commitbee-web/
 ├── content/
 │   └── docs/                 # Markdown source files with YAML frontmatter
 ├── style/
-│   ├── tailwind.css          # Tailwind v4 CSS-first config (@theme tokens, @source, @custom-variant)
+│   ├── tailwind.css          # Tailwind v4 CSS-first config (@theme tokens, @source, @custom-variant, @view-transition)
 │   └── animations.css        # Scroll-reveal + pipeline animation keyframes
 ├── public/
 │   ├── fonts/                # Inter + JetBrains Mono (self-hosted)
@@ -230,14 +231,15 @@ Markdown files in `content/docs/` with YAML frontmatter (`title`, `order`, `sect
 
 1. Walk directory, parse frontmatter
 2. Convert markdown to HTML via `pulldown-cmark`
-3. Apply syntax highlighting via `syntect`
-4. Extract heading tree for TOC generation
-5. Build search index (title + headings + first 200 words per page)
-6. Generate Rust module with doc tree as `const` statics in `$OUT_DIR`
+3. Apply syntax highlighting via `syntect` — `build.rs` strips syntect's outer `<pre>` wrapper to avoid nested `<pre>` tags, wrapping the result in a unified `<div class="code-block-wrapper">` with a consistent dark background (`#2b303b`) shared between the header bar and code body
+4. Wrap each code block in a `code-block-wrapper` div that includes a language label header and a copy-to-clipboard button (activated client-side via inline script)
+5. Extract heading tree for TOC generation
+6. Build search index (title + headings + first 200 words per page)
+7. Generate Rust module with doc tree as `const` statics in `$OUT_DIR`
 
 #### FR-012: Doc Navigation
 
-Left sidebar with collapsible section tree. Current page highlighted with amber accent. Sticky on desktop, slide-out drawer on mobile. Prev/next links at bottom of each page based on ordering. Breadcrumbs: Docs > Section > Page.
+Left sidebar with collapsible section tree. Current page highlighted with amber accent. Sticky positioning on desktop (`sticky top-20`) with thin custom scrollbar and refined typography hierarchy (section headers uppercase, page links with hover/active states). Slide-out drawer on mobile. Prev/next links at bottom of each page based on ordering. Breadcrumbs: Docs > Section > Page.
 
 Section structure:
 
@@ -255,7 +257,7 @@ Client-side fuzzy search over pre-built search index. `Cmd+K` / `Ctrl+K` keyboar
 
 #### FR-014: Code Blocks
 
-Syntax-highlighted code blocks via `syntect` (rendered at build time). Copy-to-clipboard button on each block. Language label displayed. Bee-themed syntax color scheme for both light and dark modes. Copy-to-clipboard implemented on both docs pages and landing page install section terminal blocks using `.copy-btn` with `data-code` attributes.
+Syntax-highlighted code blocks via `syntect` (rendered at build time). Copy-to-clipboard button on each block. Language label displayed. Bee-themed syntax color scheme for both light and dark modes. Copy-to-clipboard implemented on both docs pages and landing page install section terminal blocks using `.copy-btn` with `data-code` attributes. Docs code blocks are wrapped at build time by `build.rs` in a `code-block-wrapper` div containing a header bar (language label + copy button) and the code body, sharing a unified dark background (`#2b303b`). The build pipeline strips syntect's outer `<pre>` wrapper to prevent nested `<pre>` elements, applying the background color to the wrapper div instead. CSS overrides ensure consistent styling regardless of Tailwind dark mode state.
 
 #### FR-015: Table of Contents
 
@@ -320,7 +322,7 @@ GitHub Actions workflow triggered on push to `development` branch:
 
 #### FR-032: Client-Side Routing
 
-`leptos_router` for navigation between pages without full reloads. URL structure: `/` (landing), `/docs/:slug` (doc pages). Fallback route for 404.
+`leptos_router` for navigation between pages without full reloads. URL structure: `/` (landing), `/docs/:slug` (doc pages). Fallback route for 404. Cross-document navigation uses the View Transitions API (`@view-transition { navigation: auto; }` in CSS) for smoother page transitions in supporting browsers. Link prefetching is enabled via an inline script that creates `<link rel="prefetch">` elements on `pointerenter` events, preloading target pages before the user clicks for near-instant navigation.
 
 ## 5. Security Requirements
 
