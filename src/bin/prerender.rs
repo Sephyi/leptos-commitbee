@@ -116,10 +116,17 @@ fn main() {
         println!("    search_index.json -> dist/search_index.json");
     }
 
-    // Generate 404.html from index
-    let index_path = dist_dir.join("index.html");
-    if index_path.exists() {
-        fs::copy(&index_path, dist_dir.join("404.html")).ok();
+    // Generate 404.html from the pre-rendered /not-found route
+    let not_found_path = dist_dir.join("not-found").join("index.html");
+    let fallback_path = dist_dir.join("index.html");
+    let source_404 = if not_found_path.exists() {
+        &not_found_path
+    } else {
+        &fallback_path
+    };
+    if source_404.exists() {
+        fs::copy(source_404, dist_dir.join("404.html")).ok();
+        println!("    {} -> dist/404.html", source_404.display());
     }
 
     // Generate robots.txt
@@ -133,7 +140,7 @@ fn main() {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
          <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
     );
-    for route in &routes {
+    for route in routes.iter().filter(|r| **r != "/not-found") {
         let priority = if *route == "/" { "1.0" } else { "0.8" };
         let loc = if *route == "/" {
             base_url.clone()

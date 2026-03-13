@@ -53,7 +53,11 @@ fn main() {
     let theme = &ts.themes["base16-ocean.dark"];
 
     let mut pages: Vec<DocPage> = Vec::new();
-    let mut routes = vec!["/".to_string(), "/docs".to_string()];
+    let mut routes = vec![
+        "/".to_string(),
+        "/docs".to_string(),
+        "/not-found".to_string(),
+    ];
 
     for entry in WalkDir::new(content_dir)
         .into_iter()
