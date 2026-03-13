@@ -9,7 +9,7 @@ use leptos_router::{
     path,
 };
 
-use crate::components::{footer::Footer, nav::Nav};
+use crate::components::{footer::Footer, nav::Nav, scroll_observer::ScrollObserver};
 use crate::pages::{docs::DocsPage, landing::Landing, not_found::NotFound};
 
 #[component]
@@ -24,6 +24,7 @@ pub fn App() -> impl IntoView {
                 <Route path=path!("/docs/:slug") view=DocsPage/>
             </Routes>
             <Footer/>
+            <ScrollObserver/>
         </Router>
     }
 }
