@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+//
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 use leptos::prelude::*;
 use leptos_meta::*;
 

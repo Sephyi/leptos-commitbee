@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+//
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 use pulldown_cmark::{html, Event, Options, Parser, Tag, TagEnd};
 use serde::Deserialize;
 use std::fmt::Write as FmtWrite;

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+#
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 [tasks.dev]
 run = "cargo leptos watch"
 description = "Start dev server with hot reload"

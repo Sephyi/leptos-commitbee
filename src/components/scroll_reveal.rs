@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+//
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 use leptos::prelude::*;
 
 /// Scroll-reveal wrapper. Renders children inside a div with the given CSS class.

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+//
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 pub mod code_block;
 pub mod doc_search;
 pub mod doc_sidebar;

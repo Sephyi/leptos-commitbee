@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+//
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 //! Pre-render all routes from the Leptos SSR app to static HTML.
 //!
 //! Cross-platform (Linux/macOS/Windows). Zero extra dependencies — uses only std.

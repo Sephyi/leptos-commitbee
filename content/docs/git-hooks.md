@@ -1,4 +1,8 @@
 ---
+# SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+#
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 title: "Git Hooks"
 order: 1
 section: "Integration"

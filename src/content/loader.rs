@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+//
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
 include!(concat!(env!("OUT_DIR"), "/content_generated.rs"));
 
 /// Sections in display order with their pages
