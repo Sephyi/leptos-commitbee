@@ -6,7 +6,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 # CommitBee Web — Product Requirements Document
 
-**Version**: 1.2
+**Version**: 1.3
 **Date**: 2026-03-13
 **Status**: Phase 1 Implemented
 **Author**: [Sephyi](https://github.com/Sephyi) + [Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)
@@ -18,6 +18,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.3 | 2026-03-13 | Tailwind v4 CSS-first migration, ScrollObserver island (FR-023 complete), CSS hash resolution, architecture updates |
 | 1.2 | 2026-03-13 | Fix stale wget reference in FR-030 (now Rust prerender binary), document bin-target requirement in FR-031, add CLAUDE.md |
 | 1.1 | 2026-03-13 | Phase 1 implemented — all FRs built, Leptos 0.8 (was 0.7+), cross-platform Rust prerender binary, web-sys non-optional for island compatibility |
 | 1.0 | 2026-03-13 | Initial PRD — landing page, documentation wiki, Leptos architecture, bee-themed design system, GitHub Pages deployment |
@@ -66,7 +67,7 @@ The site tells the story of how CommitBee understands code through scroll-driven
 | Framework | Leptos 0.8 (islands) | SSR with surgical WASM hydration |
 | Server | Axum | Build-time HTML rendering (not deployed) |
 | Build tool | cargo-leptos | Parallel server/client compilation |
-| Styling | Tailwind CSS | Utility-first with dark mode support |
+| Styling | Tailwind CSS v4 | CSS-first config (`@theme` tokens, no JS config) with dark mode |
 | Markdown | pulldown-cmark | Build-time markdown to HTML |
 | Syntax highlighting | syntect | Rust-native, bee-themed color scheme |
 | Task runner | mise | Dev/build/content task orchestration |
@@ -108,14 +109,15 @@ commitbee-web/
 │   │   ├── doc_search.rs     # Fuzzy search island
 │   │   ├── doc_sidebar.rs    # Docs sidebar navigation
 │   │   ├── doc_toc.rs        # Right-side table of contents
-│   │   └── scroll_reveal.rs  # Scroll animation wrapper
+│   │   ├── scroll_reveal.rs  # Scroll animation wrapper (SSR)
+│   │   └── scroll_observer.rs # IntersectionObserver island (adds .visible)
 │   └── content/
 │       └── loader.rs         # Build-time markdown loader + frontmatter
 ├── content/
 │   └── docs/                 # Markdown source files with YAML frontmatter
 ├── style/
-│   ├── tailwind.css          # Tailwind directives + bee theme tokens
-│   └── animations.css        # Scroll-driven keyframes
+│   ├── tailwind.css          # Tailwind v4 CSS-first config (@theme tokens, @source, @custom-variant)
+│   └── animations.css        # Scroll-reveal + pipeline animation keyframes
 ├── public/
 │   ├── fonts/                # Inter + JetBrains Mono (self-hosted)
 │   └── images/               # OG images, favicon, bee assets
@@ -279,7 +281,7 @@ Inter for headings and body text. JetBrains Mono for code. Self-hosted fonts in 
 
 #### FR-023: Scroll Animations
 
-`IntersectionObserver` via `#[island]` as the baseline implementation (works in all browsers). CSS `animation-timeline: scroll()` as progressive enhancement for Chromium browsers. Motion style: fade-up and slide-in, smooth and organic. Respects `prefers-reduced-motion` — all animations disabled when set.
+`IntersectionObserver` via `ScrollObserver` `#[island]` as the baseline implementation (works in all browsers). A single island instance observes all `.reveal` / `.reveal-left` / `.reveal-right` / `.reveal-scale` elements and adds `.visible` on intersection. CSS `animation-timeline: scroll()` as progressive enhancement for Chromium browsers. Motion style: fade-up and slide-in, smooth and organic. Respects `prefers-reduced-motion` — all animations disabled when set.
 
 #### FR-024: Hexagonal Motifs
 
