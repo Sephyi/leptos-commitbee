@@ -12,7 +12,7 @@ pub fn Landing() -> impl IntoView {
         <Meta name="description" content="CommitBee uses tree-sitter semantic analysis and LLMs to generate high-quality conventional commit messages. Rust CLI tool."/>
         <Meta property="og:title" content="CommitBee"/>
         <Meta property="og:description" content="The commit message generator that actually understands your code."/>
-        <Meta property="og:image" content="/images/og.png"/>
+        <Meta property="og:type" content="website"/>
 
         <div>
             <HeroSection/>

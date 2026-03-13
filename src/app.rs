@@ -12,6 +12,15 @@ use leptos_router::{
 use crate::components::{footer::Footer, nav::Nav};
 use crate::pages::{docs::DocsPage, landing::Landing, not_found::NotFound};
 
+/// Redirects /docs to /docs/getting-started via meta refresh (works without JS).
+#[component]
+fn DocsRedirect() -> impl IntoView {
+    view! {
+        <meta http-equiv="refresh" content="0;url=/docs/getting-started"/>
+        <p>"Redirecting to "<a href="/docs/getting-started">"Getting Started"</a>"..."</p>
+    }
+}
+
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
@@ -21,6 +30,7 @@ pub fn App() -> impl IntoView {
             <Nav/>
             <Routes fallback=|| view! { <NotFound/> }>
                 <Route path=path!("/") view=Landing/>
+                <Route path=path!("/docs") view=DocsRedirect/>
                 <Route path=path!("/docs/:slug") view=DocsPage/>
             </Routes>
             <Footer/>
