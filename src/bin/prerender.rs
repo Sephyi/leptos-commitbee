@@ -122,6 +122,32 @@ fn main() {
         fs::copy(&index_path, dist_dir.join("404.html")).ok();
     }
 
+    // Generate robots.txt
+    let base_url = env_base_url().unwrap_or_else(|| "https://commitbee.dev".to_string());
+    let robots = format!("User-agent: *\nAllow: /\n\nSitemap: {base_url}/sitemap.xml\n");
+    fs::write(dist_dir.join("robots.txt"), &robots).expect("Failed to write robots.txt");
+    println!("    robots.txt -> dist/robots.txt");
+
+    // Generate sitemap.xml
+    let mut sitemap = String::from(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+         <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
+    );
+    for route in &routes {
+        let priority = if *route == "/" { "1.0" } else { "0.8" };
+        let loc = if *route == "/" {
+            base_url.clone()
+        } else {
+            format!("{base_url}{route}")
+        };
+        sitemap.push_str(&format!(
+            "  <url>\n    <loc>{loc}</loc>\n    <priority>{priority}</priority>\n  </url>\n"
+        ));
+    }
+    sitemap.push_str("</urlset>\n");
+    fs::write(dist_dir.join("sitemap.xml"), &sitemap).expect("Failed to write sitemap.xml");
+    println!("    sitemap.xml -> dist/sitemap.xml");
+
     // Stop server
     server.kill().ok();
     server.wait().ok();
@@ -134,6 +160,10 @@ fn main() {
 
 fn env_port() -> Option<u16> {
     std::env::var("PRERENDER_PORT").ok()?.parse().ok()
+}
+
+fn env_base_url() -> Option<String> {
+    std::env::var("SITE_BASE_URL").ok()
 }
 
 fn wait_for_server(port: u16, timeout: Duration) -> bool {
@@ -182,10 +212,10 @@ fn walk_find(dir: &Path, filename: &str, path_contains: &str) -> Option<PathBuf>
         {
             return Some(path);
         }
-        if path.is_dir() {
-            if let Some(found) = walk_find(&path, filename, path_contains) {
-                return Some(found);
-            }
+        if path.is_dir()
+            && let Some(found) = walk_find(&path, filename, path_contains)
+        {
+            return Some(found);
         }
     }
     None
