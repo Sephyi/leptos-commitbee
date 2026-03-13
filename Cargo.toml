@@ -84,7 +84,6 @@ output-name = "commitbee-web"
 site-root = "target/site"
 site-pkg-dir = "pkg"
 tailwind-input-file = "style/tailwind.css"
-tailwind-config-file = "tailwind.config.js"
 assets-dir = "public"
 site-addr = "127.0.0.1:3000"
 reload-port = 3001

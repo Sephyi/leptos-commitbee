@@ -29,6 +29,9 @@ pub fn App() -> impl IntoView {
 }
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
+    let pkg_path = &options.site_pkg_dir;
+    let css_href = resolve_css_href(&options, pkg_path);
+
     view! {
         <!DOCTYPE html>
         <html lang="en">
@@ -38,7 +41,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
                 <link rel="alternate icon" href="/images/favicon.ico"/>
                 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/>
-                <link rel="preload" href="/fonts/Inter-Variable.woff2" as_="font" type_="font/woff2" crossorigin="anonymous"/>
+                <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
+                <link rel="stylesheet" href=css_href/>
                 // Inline theme script: prevents FOUC
                 <script>{r#"
                     (function(){
@@ -57,4 +61,25 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             </body>
         </html>
     }
+}
+
+fn resolve_css_href(options: &LeptosOptions, pkg_path: &str) -> String {
+    let mut css_file = options.output_name.to_string();
+    if options.hash_files {
+        let hash_path = std::env::current_exe()
+            .map(|path| path.parent().map(|p| p.to_path_buf()).unwrap_or_default())
+            .unwrap_or_default()
+            .join(options.hash_file.as_ref());
+        if let Ok(hashes) = std::fs::read_to_string(&hash_path) {
+            for line in hashes.lines() {
+                let line = line.trim();
+                if let Some((file, hash)) = line.split_once(':') {
+                    if file == "css" {
+                        css_file.push_str(&format!(".{}", hash.trim()));
+                    }
+                }
+            }
+        }
+    }
+    format!("/{pkg_path}/{css_file}.css")
 }

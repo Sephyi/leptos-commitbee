@@ -118,7 +118,7 @@ pub fn DocSearch() -> impl IntoView {
         // Modal overlay
         <Show when=move || is_open.get()>
             <div
-                class="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-bark/50 backdrop-blur-sm"
+                class="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-bark/50 backdrop-blur-xs"
                 on:click=move |_| set_is_open.set(false)
             >
                 <div
@@ -133,7 +133,7 @@ pub fn DocSearch() -> impl IntoView {
                         <input
                             type="text"
                             placeholder="Search documentation..."
-                            class="flex-1 bg-transparent px-3 py-4 text-bark placeholder:text-comb/50 outline-none"
+                            class="flex-1 bg-transparent px-3 py-4 text-bark placeholder:text-comb/50 outline-hidden"
                             autofocus=true
                             on:input=move |e| set_query.set(event_target_value(&e))
                         />

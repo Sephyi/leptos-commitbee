@@ -27,6 +27,9 @@ dist/
 # Leptos build artifacts
 /pkg/
 
+# cargo-leptos auto-generates this; Tailwind v4 uses CSS-first config instead
+tailwind.config.js
+
 # Rust backup files (rustfmt)
 **/*.rs.bk
 
