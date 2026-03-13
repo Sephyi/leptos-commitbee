@@ -196,15 +196,17 @@ fn render_markdown_with_syntax_highlighting(
                     &code_lang
                 };
 
-                let highlighted = if let Some(syntax) = ss.find_syntax_by_token(&code_lang) {
-                    highlighted_html_for_string(&code_content, ss, syntax, theme)
-                        .unwrap_or_else(|_| html_escape(&code_content))
-                } else {
-                    html_escape(&code_content)
-                };
+                let (highlighted, bg_style) =
+                    if let Some(syntax) = ss.find_syntax_by_token(&code_lang) {
+                        let raw = highlighted_html_for_string(&code_content, ss, syntax, theme)
+                            .unwrap_or_else(|_| html_escape(&code_content));
+                        strip_syntect_pre(&raw)
+                    } else {
+                        (html_escape(&code_content), String::new())
+                    };
 
                 let html = format!(
-                    r#"<div class="code-block-wrapper relative group" data-lang="{lang_display}"><div class="code-block-header flex items-center justify-between px-4 py-2 text-xs text-comb bg-pollen rounded-t-lg border-b border-honey/10"><span>{lang_display}</span><button class="copy-btn opacity-0 group-hover:opacity-100 transition-opacity text-comb hover:text-honey" data-code="{escaped}">Copy</button></div><pre class="!rounded-t-none"><code>{highlighted}</code></pre></div>"#,
+                    r#"<div class="code-block-wrapper relative group rounded-lg overflow-hidden my-6" data-lang="{lang_display}"{bg_style}><div class="code-block-header flex items-center justify-between px-4 py-2 text-xs border-b border-white/10"><span class="text-white/50">{lang_display}</span><button class="copy-btn opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-white/80" data-code="{escaped}">Copy</button></div><pre><code>{highlighted}</code></pre></div>"#,
                     escaped = html_escape(&code_content)
                 );
 
@@ -271,6 +273,32 @@ fn strip_html_tags(s: &str) -> String {
         }
     }
     result
+}
+
+/// Strip syntect's outer `<pre style="...">...</pre>` wrapper.
+/// Returns (inner_html, style_attr) where style_attr is ` style="..."` or empty.
+fn strip_syntect_pre(html: &str) -> (String, String) {
+    // syntect wraps output in: <pre style="background-color:#2b303b;">\n<span ...>...</span>\n</pre>\n
+    if let Some(rest) = html.strip_prefix("<pre ") {
+        // Extract the style attribute from the opening <pre> tag
+        if let Some(close_bracket) = rest.find('>') {
+            let attrs = &rest[..close_bracket]; // e.g. style="background-color:#2b303b;"
+            let style_attr = if attrs.contains("style=") {
+                format!(" {attrs}")
+            } else {
+                String::new()
+            };
+            let inner = &rest[close_bracket + 1..];
+            // Strip trailing </pre> and whitespace
+            let inner = inner
+                .trim_end()
+                .strip_suffix("</pre>")
+                .unwrap_or(inner)
+                .trim();
+            return (inner.to_string(), style_attr);
+        }
+    }
+    (html.to_string(), String::new())
 }
 
 fn html_escape(s: &str) -> String {

@@ -13,6 +13,11 @@
 /* Class-based dark mode (toggle via .dark on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Cross-document view transitions (Chrome 126+, Safari 18+) */
+@view-transition {
+  navigation: auto;
+}
+
 @theme {
   /* Bee-themed color tokens */
   --color-honey: var(--honey);
@@ -108,6 +113,36 @@
 }
 
 @layer components {
+  /* Thin scrollbar for sidebar */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--color-honey) 20%, transparent) transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--color-honey) 20%, transparent);
+    border-radius: 2px;
+  }
+
+  /* Code block wrapper: unified background, override prose pre defaults */
+  .code-block-wrapper {
+    background-color: #2b303b;
+  }
+
+  .code-block-wrapper pre {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
   .prose {
     color: var(--color-bark);
     line-height: 1.625;

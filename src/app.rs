@@ -80,6 +80,20 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                         new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
                     })();
                 "#}</script>
+                // Link prefetching: fetch same-origin pages on hover for instant navigation
+                <script>{r#"
+                    (function(){
+                        var c={};
+                        document.addEventListener('pointerenter',function(e){
+                            var a=e.target.closest('a');
+                            if(!a||!a.href||a.target||a.origin!==location.origin||c[a.pathname]) return;
+                            c[a.pathname]=1;
+                            var l=document.createElement('link');
+                            l.rel='prefetch';l.href=a.href;
+                            document.head.appendChild(l);
+                        },true);
+                    })();
+                "#}</script>
                 <noscript>
                     <style>".reveal,.reveal-left,.reveal-right,.reveal-scale{opacity:1!important;transform:none!important}"</style>
                 </noscript>

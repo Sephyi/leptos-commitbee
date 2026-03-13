@@ -26,13 +26,13 @@ pub fn DocsPage() -> impl IntoView {
                     <Meta property="og:description" content=page.description/>
 
                     <div class="flex min-h-screen">
-                        // Left sidebar
+                        // Left sidebar (sticky, full-height)
                         <div class="hidden lg:block">
                             <DocSidebar current_slug=current_slug.clone()/>
                         </div>
 
                         // Main content
-                        <main class="flex-1 min-w-0 px-6 py-8 lg:px-12">
+                        <main class="flex-1 min-w-0 px-6 py-8 lg:px-10">
                             // Breadcrumbs
                             <nav class="mb-6 text-sm text-comb" aria-label="Breadcrumb">
                                 <a href="/docs/getting-started" class="hover:text-honey transition-colors">"Docs"</a>
