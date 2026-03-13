@@ -7,8 +7,32 @@ module.exports = {
       rs: (content) => content.replace(/(?:^|\s)class:/g, " "),
     },
   },
+  darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        honey: {
+          DEFAULT: "var(--honey)",
+          light: "var(--honey-light)",
+          dark: "var(--honey-dark)",
+        },
+        nectar: "var(--nectar)",
+        comb: "var(--comb)",
+        bark: "var(--bark)",
+        pollen: "var(--pollen)",
+        surface: {
+          DEFAULT: "var(--surface)",
+          raised: "var(--surface-raised)",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+      },
+      maxWidth: {
+        prose: "75ch",
+      },
+    },
   },
   plugins: [],
 };

@@ -1,0 +1,140 @@
+/* Scroll reveal animations -- baseline via IntersectionObserver (JS island),
+   progressive enhancement via CSS scroll-timeline for Chromium */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.reveal-stagger > .reveal:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger > .reveal:nth-child(2) { transition-delay: 100ms; }
+.reveal-stagger > .reveal:nth-child(3) { transition-delay: 200ms; }
+.reveal-stagger > .reveal:nth-child(4) { transition-delay: 400ms; }
+.reveal-stagger > .reveal:nth-child(5) { transition-delay: 500ms; }
+.reveal-stagger > .reveal:nth-child(6) { transition-delay: 600ms; }
+.reveal-stagger > .reveal:nth-child(7) { transition-delay: 700ms; }
+
+/* Slide from left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide from right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale up */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Honeycomb pulse background */
+@keyframes hex-pulse {
+  0%, 100% { opacity: 0.03; }
+  50% { opacity: 0.08; }
+}
+
+.hex-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23f59e0b' fill-opacity='0.06'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  animation: hex-pulse 4s ease-in-out infinite;
+}
+
+/* Progressive enhancement: CSS scroll-driven animations (Chromium) */
+@supports (animation-timeline: scroll()) {
+  .reveal-scroll {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Pipeline demo step transitions */
+.pipeline-step {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.pipeline-step.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Terminal typing animation */
+@keyframes blink-caret {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: var(--honey); }
+}
+
+.terminal-cursor {
+  border-right: 2px solid var(--honey);
+  animation: blink-caret 1s step-end infinite;
+}
+
+/* Reduced motion: override all animations */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .pipeline-step {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hex-bg {
+    animation: none;
+    opacity: 0.05;
+  }
+
+  .terminal-cursor {
+    animation: none;
+    border-color: var(--honey);
+  }
+}

@@ -1,3 +1,79 @@
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/Inter-Variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --honey: #f59e0b;
+    --honey-light: #fcd34d;
+    --honey-dark: #d97706;
+    --nectar: #fffbeb;
+    --comb: #78716c;
+    --bark: #1c1917;
+    --pollen: #fef3c7;
+    --surface: #ffffff;
+    --surface-raised: #fafaf9;
+  }
+
+  .dark {
+    --honey: #fbbf24;
+    --honey-light: #fcd34d;
+    --honey-dark: #f59e0b;
+    --nectar: #1c1917;
+    --comb: #a8a29e;
+    --bark: #fafaf9;
+    --pollen: #292524;
+    --surface: #0c0a09;
+    --surface-raised: #1c1917;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background-color: var(--surface);
+    color: var(--bark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+}
+
+@import "./animations.css";
