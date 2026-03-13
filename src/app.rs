@@ -5,27 +5,22 @@ use leptos_router::{
     path,
 };
 
+use crate::components::{footer::Footer, nav::Nav};
+use crate::pages::{docs::DocsPage, landing::Landing, not_found::NotFound};
+
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
         <Router>
-            <main>
-                <Routes fallback=|| view! { <p>"Page not found"</p> }>
-                    <Route path=path!("/") view=HomePage/>
-                </Routes>
-            </main>
+            <Nav/>
+            <Routes fallback=|| view! { <NotFound/> }>
+                <Route path=path!("/") view=Landing/>
+                <Route path=path!("/docs/:slug") view=DocsPage/>
+            </Routes>
+            <Footer/>
         </Router>
-    }
-}
-
-#[component]
-fn HomePage() -> impl IntoView {
-    view! {
-        <Title text="CommitBee - The commit message generator that actually understands your code"/>
-        <h1>"CommitBee"</h1>
-        <p>"The commit message generator that actually understands your code."</p>
     }
 }
 
@@ -36,6 +31,19 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
+                <link rel="alternate icon" href="/images/favicon.ico"/>
+                <link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/>
+                <link rel="preload" href="/fonts/Inter-Variable.woff2" as_="font" type_="font/woff2" crossorigin="anonymous"/>
+                // Inline theme script: prevents FOUC
+                <script>{r#"
+                    (function(){
+                        var t = localStorage.getItem('theme');
+                        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches)) {
+                            document.documentElement.classList.add('dark');
+                        }
+                    })();
+                "#}</script>
                 <AutoReload options=options.clone()/>
                 <HydrationScripts options islands=true/>
                 <MetaTags/>

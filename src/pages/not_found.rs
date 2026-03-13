@@ -1,13 +1,23 @@
 use leptos::prelude::*;
+use leptos_meta::*;
 
 #[component]
-pub fn NotFoundPage() -> impl IntoView {
+pub fn NotFound() -> impl IntoView {
     view! {
-        <div class="flex min-h-[60vh] items-center justify-center">
+        <Title text="404 - CommitBee"/>
+        <div class="flex items-center justify-center min-h-screen">
             <div class="text-center">
-                <h1 class="text-6xl font-bold text-honey">"404"</h1>
-                <p class="mt-4 text-lg text-comb">"Page not found"</p>
-                <a href="/" class="mt-6 inline-block text-sm text-honey hover:underline">"Back to home"</a>
+                <div class="text-6xl mb-4">"🐝"</div>
+                <h1 class="text-5xl font-bold text-bark">"404"</h1>
+                <p class="mt-4 text-lg text-comb">"This page buzzed off somewhere."</p>
+                <div class="mt-8 flex items-center justify-center gap-4">
+                    <a href="/" class="rounded-lg bg-honey px-6 py-3 text-sm font-semibold text-white hover:bg-honey-dark transition-colors">
+                        "Go Home"
+                    </a>
+                    <a href="/docs/getting-started" class="rounded-lg border border-honey/30 px-6 py-3 text-sm font-semibold text-bark hover:bg-honey/5 transition-colors">
+                        "Read Docs"
+                    </a>
+                </div>
             </div>
         </div>
     }
