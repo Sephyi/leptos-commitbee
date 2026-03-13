@@ -9,6 +9,5 @@ pub mod doc_toc;
 pub mod footer;
 pub mod nav;
 pub mod pipeline_demo;
-pub mod scroll_observer;
 pub mod scroll_reveal;
 pub mod theme_toggle;

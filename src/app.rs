@@ -9,7 +9,7 @@ use leptos_router::{
     path,
 };
 
-use crate::components::{footer::Footer, nav::Nav, scroll_observer::ScrollObserver};
+use crate::components::{footer::Footer, nav::Nav};
 use crate::pages::{docs::DocsPage, landing::Landing, not_found::NotFound};
 
 #[component]
@@ -24,7 +24,6 @@ pub fn App() -> impl IntoView {
                 <Route path=path!("/docs/:slug") view=DocsPage/>
             </Routes>
             <Footer/>
-            <ScrollObserver/>
         </Router>
     }
 }
@@ -40,8 +39,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
-                <link rel="alternate icon" href="/images/favicon.ico"/>
-                <link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/>
+                <link rel="alternate icon" href="/images/favicon.svg"/>
                 <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="stylesheet" href=css_href/>
                 // Inline theme script: prevents FOUC
@@ -59,6 +57,32 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             </head>
             <body class="bg-surface text-bark antialiased">
                 <App/>
+                // Inline scroll-reveal observer: runs before WASM, no hydration dependency
+                <script>{r#"
+                    (function(){
+                        var vh=window.innerHeight;
+                        var o=new IntersectionObserver(function(e){
+                            e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')});
+                        },{threshold:0.1});
+                        var s='.reveal:not(.visible),.reveal-left:not(.visible),.reveal-right:not(.visible),.reveal-scale:not(.visible)';
+                        function scan(){
+                            document.querySelectorAll(s).forEach(function(el){
+                                var r=el.getBoundingClientRect();
+                                if(r.top<vh&&r.bottom>0){
+                                    el.style.transition='none';
+                                    el.classList.add('visible');
+                                    void el.offsetHeight;
+                                    el.style.removeProperty('transition');
+                                } else o.observe(el);
+                            });
+                        }
+                        scan();
+                        new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
+                    })();
+                "#}</script>
+                <noscript>
+                    <style>".reveal,.reveal-left,.reveal-right,.reveal-scale{opacity:1!important;transform:none!important}"</style>
+                </noscript>
             </body>
         </html>
     }

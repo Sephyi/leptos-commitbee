@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 Sephyi <me@sephy.io>
+
+SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+-->
+
 # CommitBee Web Implementation Plan
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
