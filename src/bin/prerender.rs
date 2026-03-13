@@ -1,0 +1,209 @@
+//! Pre-render all routes from the Leptos SSR app to static HTML.
+//!
+//! Cross-platform (Linux/macOS/Windows). Zero extra dependencies — uses only std.
+//! Reads routes from the build-generated `routes.txt` manifest.
+//!
+//! Usage: `cargo run --bin prerender --features ssr --release`
+
+use std::fs;
+use std::io::{Read, Write};
+use std::net::TcpStream;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::thread;
+use std::time::{Duration, Instant};
+
+fn main() {
+    let site_dir = PathBuf::from("target/site");
+    let dist_dir = PathBuf::from("dist");
+    let port: u16 = env_port().unwrap_or(3000);
+
+    let server_bin = if cfg!(windows) {
+        PathBuf::from("target/release/commitbee-web.exe")
+    } else {
+        PathBuf::from("target/release/commitbee-web")
+    };
+
+    println!("==> Starting pre-render...");
+
+    // Clean dist
+    if dist_dir.exists() {
+        fs::remove_dir_all(&dist_dir).expect("Failed to clean dist directory");
+    }
+    fs::create_dir_all(&dist_dir).expect("Failed to create dist directory");
+
+    // Start the server
+    let mut server = Command::new(&server_bin)
+        .env("LEPTOS_SITE_ADDR", format!("127.0.0.1:{port}"))
+        .spawn()
+        .unwrap_or_else(|e| {
+            eprintln!(
+                "ERROR: Failed to start server at {}: {e}",
+                server_bin.display()
+            );
+            std::process::exit(1);
+        });
+
+    // Wait for server to be ready
+    if !wait_for_server(port, Duration::from_secs(30)) {
+        eprintln!("ERROR: Server failed to start within 30s");
+        server.kill().ok();
+        std::process::exit(1);
+    }
+    println!("==> Server ready on port {port}");
+
+    // Find routes.txt
+    let routes_file = find_routes_txt().unwrap_or_else(|| {
+        eprintln!("ERROR: routes.txt not found in target/build/commitbee-web-*/out/");
+        server.kill().ok();
+        std::process::exit(1);
+    });
+    println!("==> Using routes from: {}", routes_file.display());
+
+    // Read routes
+    let routes_content = fs::read_to_string(&routes_file).expect("Failed to read routes.txt");
+    let routes: Vec<&str> = routes_content.lines().filter(|l| !l.is_empty()).collect();
+
+    // Pre-render each route
+    let mut rendered = 0usize;
+    for route in &routes {
+        let output_path = if *route == "/" {
+            dist_dir.join("index.html")
+        } else {
+            dist_dir
+                .join(route.trim_start_matches('/'))
+                .join("index.html")
+        };
+
+        if let Some(parent) = output_path.parent() {
+            fs::create_dir_all(parent).ok();
+        }
+
+        match http_get("127.0.0.1", port, route) {
+            Ok(body) => {
+                fs::write(&output_path, body).expect("Failed to write HTML");
+                println!("    {route} -> {}", output_path.display());
+                rendered += 1;
+            }
+            Err(e) => {
+                eprintln!("    WARNING: Failed to render {route}: {e}");
+            }
+        }
+    }
+
+    // Copy static assets
+    println!("==> Copying static assets...");
+    let pkg_src = site_dir.join("pkg");
+    let pkg_dst = dist_dir.join("pkg");
+    if pkg_src.exists() {
+        copy_dir_recursive(&pkg_src, &pkg_dst).expect("Failed to copy pkg/");
+    }
+
+    let public_dir = PathBuf::from("public");
+    if public_dir.exists() {
+        copy_dir_recursive(&public_dir, &dist_dir).expect("Failed to copy public/");
+    }
+
+    // Generate 404.html from index
+    let index_path = dist_dir.join("index.html");
+    if index_path.exists() {
+        fs::copy(&index_path, dist_dir.join("404.html")).ok();
+    }
+
+    // Stop server
+    server.kill().ok();
+    server.wait().ok();
+
+    let file_count = count_files(&dist_dir);
+    println!("==> Pre-render complete. Output in {}/", dist_dir.display());
+    println!("    Routes rendered: {rendered}");
+    println!("    Total files: {file_count}");
+}
+
+fn env_port() -> Option<u16> {
+    std::env::var("PRERENDER_PORT").ok()?.parse().ok()
+}
+
+fn wait_for_server(port: u16, timeout: Duration) -> bool {
+    let start = Instant::now();
+    while start.elapsed() < timeout {
+        if TcpStream::connect(format!("127.0.0.1:{port}")).is_ok() {
+            return true;
+        }
+        thread::sleep(Duration::from_millis(500));
+    }
+    false
+}
+
+/// Minimal HTTP/1.0 GET — no dependencies needed.
+fn http_get(host: &str, port: u16, path: &str) -> Result<String, Box<dyn std::error::Error>> {
+    let addr = format!("{host}:{port}");
+    let mut stream = TcpStream::connect(&addr)?;
+    stream.set_read_timeout(Some(Duration::from_secs(30)))?;
+
+    let request = format!("GET {path} HTTP/1.0\r\nHost: {addr}\r\nConnection: close\r\n\r\n");
+    stream.write_all(request.as_bytes())?;
+    stream.flush()?;
+
+    let mut response = String::new();
+    stream.read_to_string(&mut response)?;
+
+    // Split headers from body at the blank line
+    let body_start = response.find("\r\n\r\n").map(|i| i + 4).unwrap_or(0);
+    Ok(response[body_start..].to_string())
+}
+
+fn find_routes_txt() -> Option<PathBuf> {
+    let build_dir = PathBuf::from("target");
+    walk_find(&build_dir, "routes.txt", "commitbee-web")
+}
+
+fn walk_find(dir: &Path, filename: &str, path_contains: &str) -> Option<PathBuf> {
+    if !dir.is_dir() {
+        return None;
+    }
+    for entry in fs::read_dir(dir).ok()?.flatten() {
+        let path = entry.path();
+        if path.is_file()
+            && path.file_name().is_some_and(|f| f == filename)
+            && path.to_string_lossy().contains(path_contains)
+        {
+            return Some(path);
+        }
+        if path.is_dir() {
+            if let Some(found) = walk_find(&path, filename, path_contains) {
+                return Some(found);
+            }
+        }
+    }
+    None
+}
+
+fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
+    fs::create_dir_all(dst)?;
+    for entry in fs::read_dir(src)?.flatten() {
+        let src_path = entry.path();
+        let dst_path = dst.join(entry.file_name());
+        if src_path.is_dir() {
+            copy_dir_recursive(&src_path, &dst_path)?;
+        } else {
+            fs::copy(&src_path, &dst_path)?;
+        }
+    }
+    Ok(())
+}
+
+fn count_files(dir: &Path) -> usize {
+    let mut count = 0;
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file() {
+                count += 1;
+            } else if path.is_dir() {
+                count += count_files(&path);
+            }
+        }
+    }
+    count
+}

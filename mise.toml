@@ -17,3 +17,8 @@ description = "Format Rust code"
 [tasks.check]
 run = "cargo clippy --features ssr -- -D warnings && cargo clippy --features hydrate --target wasm32-unknown-unknown -- -D warnings"
 description = "Lint server and client code"
+
+[tasks.prerender]
+run = "cargo run --bin prerender --features ssr --release"
+description = "Pre-render all routes to static HTML"
+depends = ["build"]
