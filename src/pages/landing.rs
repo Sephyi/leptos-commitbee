@@ -13,8 +13,9 @@ pub fn Landing() -> impl IntoView {
         <Meta property="og:title" content="CommitBee"/>
         <Meta property="og:description" content="The commit message generator that actually understands your code."/>
         <Meta property="og:type" content="website"/>
+        <Link rel="canonical" href="https://commitbee.dev/"/>
 
-        <div>
+        <main id="main-content">
             <HeroSection/>
             <ProblemSection/>
             <PipelineSection/>
@@ -23,7 +24,7 @@ pub fn Landing() -> impl IntoView {
             <InstallSection/>
             <DocsTransitionSection/>
             <crate::components::code_block::CodeBlockActivator/>
-        </div>
+        </main>
     }
 }
 

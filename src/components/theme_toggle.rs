@@ -64,14 +64,14 @@ pub fn ThemeToggle() -> impl IntoView {
 }
 
 fn apply_theme(dark: bool) {
-    if let Some(document) = web_sys::window().and_then(|w: web_sys::Window| w.document()) {
-        if let Some(html) = document.document_element() {
-            let class_list = html.class_list();
-            if dark {
-                let _ = class_list.add_1("dark");
-            } else {
-                let _ = class_list.remove_1("dark");
-            }
+    if let Some(document) = web_sys::window().and_then(|w: web_sys::Window| w.document())
+        && let Some(html) = document.document_element()
+    {
+        let class_list = html.class_list();
+        if dark {
+            let _ = class_list.add_1("dark");
+        } else {
+            let _ = class_list.remove_1("dark");
         }
     }
 }

@@ -48,6 +48,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'"/>
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
                 <link rel="alternate icon" href="/images/favicon.svg"/>
                 <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
@@ -66,6 +67,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <MetaTags/>
             </head>
             <body class="bg-surface text-bark antialiased">
+                <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-honey focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg">"Skip to content"</a>
                 <App/>
                 // Inline scroll-reveal observer: runs before WASM, no hydration dependency
                 <script>{r#"
@@ -122,10 +124,10 @@ fn resolve_css_href(options: &LeptosOptions, pkg_path: &str) -> String {
         if let Ok(hashes) = std::fs::read_to_string(&hash_path) {
             for line in hashes.lines() {
                 let line = line.trim();
-                if let Some((file, hash)) = line.split_once(':') {
-                    if file == "css" {
-                        css_file.push_str(&format!(".{}", hash.trim()));
-                    }
+                if let Some((file, hash)) = line.split_once(':')
+                    && file == "css"
+                {
+                    css_file.push_str(&format!(".{}", hash.trim()));
                 }
             }
         }
