@@ -6,7 +6,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 # CommitBee Web — Product Requirements Document
 
-**Version**: 1.5
+**Version**: 1.6
 **Date**: 2026-03-13
 **Status**: Phase 1 Implemented
 **Author**: [Sephyi](https://github.com/Sephyi) + [Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)
@@ -18,6 +18,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.6 | 2026-03-13 | Mobile menu island (FR-025), TOC scroll-spy highlighting (FR-015), search a11y keyboard nav (FR-013), skip-to-content + CSP + semantic landmarks (UX-001/SR-002), robots.txt + sitemap.xml + canonical URLs (DR-002), architecture tree update |
 | 1.5 | 2026-03-13 | Fix nested `<pre>` in docs code blocks (build.rs strips syntect wrapper), unified code block styling (#2b303b background), View Transitions API for cross-document navigation, link prefetching on hover, redesigned sticky doc sidebar, copy-to-clipboard buttons on docs code blocks via code-block-wrapper in build.rs, confirm ScrollObserver WASM island fully replaced by inline script (Claude) |
 | 1.4 | 2026-03-13 | Replace ScrollObserver island with inline script in app.rs shell (FR-023 rewrite), copy buttons on landing page install section (FR-006/FR-014), remove nonexistent asset links from HTML shell, architecture file tree update |
 | 1.3 | 2026-03-13 | Tailwind v4 CSS-first migration, ScrollObserver island (FR-023 complete), CSS hash resolution, architecture updates |
@@ -108,10 +109,12 @@ commitbee-web/
 │   │   ├── theme_toggle.rs   # Dark/light mode island
 │   │   ├── pipeline_demo.rs  # Animated pipeline walkthrough island
 │   │   ├── code_block.rs     # Syntax-highlighted code with copy island
-│   │   ├── doc_search.rs     # Fuzzy search island
+│   │   ├── doc_search.rs     # Fuzzy search island (Cmd+K, arrow nav)
 │   │   ├── doc_sidebar.rs    # Docs sidebar navigation
 │   │   ├── doc_toc.rs        # Right-side table of contents
-│   │   └── scroll_reveal.rs  # Scroll animation wrapper (SSR)
+│   │   ├── mobile_menu.rs    # Slide-out mobile navigation island
+│   │   ├── scroll_reveal.rs  # Scroll animation wrapper (SSR)
+│   │   └── toc_highlighter.rs # Scroll-spy TOC highlighting island
 │   └── content/
 │       └── loader.rs         # Build-time markdown loader + frontmatter
 ├── content/
@@ -253,7 +256,7 @@ Section structure:
 
 #### FR-013: Doc Search
 
-Client-side fuzzy search over pre-built search index. `Cmd+K` / `Ctrl+K` keyboard shortcut to open search overlay. Searches titles, headings, and content excerpts. Results ranked by relevance. Implemented as an `#[island]` component. Search index emitted as a separate JSON file by `build.rs`, loaded lazily when the search modal opens (not baked into WASM to keep bundle small). Fuzzy matching via `sublime_fuzzy` or equivalent compiled into the search island.
+Client-side fuzzy search over pre-built search index. `Cmd+K` / `Ctrl+K` keyboard shortcut to open search overlay. Searches titles, headings, and content excerpts. Results ranked by relevance. Implemented as an `#[island]` component. Search index emitted as a separate JSON file by `build.rs`, loaded lazily when the search modal opens (not baked into WASM to keep bundle small). Fuzzy matching via `sublime_fuzzy` or equivalent compiled into the search island. Keyboard accessibility: ArrowUp/ArrowDown cycles through results with visual highlight, Enter navigates to the selected result, Escape closes the modal. Body scroll is locked while the modal is open. The search input receives auto-focus with a short delay for DOM rendering.
 
 #### FR-014: Code Blocks
 
@@ -261,7 +264,7 @@ Syntax-highlighted code blocks via `syntect` (rendered at build time). Copy-to-c
 
 #### FR-015: Table of Contents
 
-Right sidebar (desktop only) auto-generated from page headings. Highlights current section on scroll via `IntersectionObserver`. Smooth-scrolls to heading on click.
+Right sidebar (desktop only) auto-generated from page headings. Highlights current section on scroll via `IntersectionObserver`. Smooth-scrolls to heading on click. Scroll-spy highlighting is implemented as a separate `TocHighlighter` `#[island]` (rather than converting `DocToc` itself, since its `&'static` heading props are not serializable for island deserialization). The island uses a `-70% bottom margin` observer to trigger headings when they reach the top portion of the viewport, tracking visible heading IDs in a `HashSet` and highlighting the first visible heading in document order with `text-honey font-medium border-l-2 border-honey` styling.
 
 ### 4.3 Phase 1 — Design System
 
@@ -302,7 +305,7 @@ Subtle hex grid pattern in hero background. Feature card borders with hex-inspir
 
 #### FR-025: Sticky Navigation
 
-Fixed navigation bar at top of page. Shows commitbee logo/name, primary nav links (Home, Docs, GitHub). On docs pages, adds search bar. Transparent background on hero, solid background after scroll. Mobile: hamburger menu with slide-out drawer.
+Fixed navigation bar at top of page. Shows commitbee logo/name, primary nav links (Home, Docs, GitHub). On docs pages, adds search bar. Transparent background on hero, solid background after scroll. Mobile: `MobileMenu` `#[island]` replaces the original non-functional hamburger button with a full slide-out navigation panel. Features backdrop overlay, `slide-in-right` CSS animation with `prefers-reduced-motion` override, Escape key dismissal, and close-on-click behavior for all navigation links (Home, Docs, GitHub, crates.io).
 
 ### 4.4 Phase 1 — Infrastructure
 
@@ -364,7 +367,7 @@ OG images and assets served in modern formats (WebP with fallback). Lazy loading
 
 ### UX-001: Accessibility
 
-WCAG 2.1 AA compliance. Semantic HTML throughout. Keyboard navigation for all interactive elements. Focus indicators on all interactive elements. Screen reader compatible navigation and content structure. `prefers-reduced-motion` respected for all animations.
+WCAG 2.1 AA compliance. Semantic HTML throughout. Keyboard navigation for all interactive elements. Focus indicators on all interactive elements. Screen reader compatible navigation and content structure. `prefers-reduced-motion` respected for all animations. Skip-to-content link (`<a href="#main-content">`) is visually hidden by default, visible on focus with honey accent styling. Landing page uses `<main id="main-content">` semantic landmark; docs pages use `id="main-content"` on the content container.
 
 ### UX-002: Responsive Design
 
@@ -408,7 +411,7 @@ Static HTML + WASM + CSS + assets deployed to `gh-pages` branch. Custom domain s
 
 ### DR-002: Pre-Render Pipeline
 
-All routes pre-rendered at build time. Route list auto-generated by `build.rs` into a `routes.txt` manifest (doc slugs from content pipeline + landing page). A cross-platform Rust binary (`src/bin/prerender.rs`) starts the Axum server locally, iterates the manifest, and fetches each route via HTTP/1.0 GET to `path/index.html` (e.g., `docs/getting-started/index.html`). Zero shell dependencies — works on Linux, macOS, and Windows. `404.html` generated for unmatched routes.
+All routes pre-rendered at build time. Route list auto-generated by `build.rs` into a `routes.txt` manifest (doc slugs from content pipeline + landing page). A cross-platform Rust binary (`src/bin/prerender.rs`) starts the Axum server locally, iterates the manifest, and fetches each route via HTTP/1.0 GET to `path/index.html` (e.g., `docs/getting-started/index.html`). Zero shell dependencies — works on Linux, macOS, and Windows. `404.html` generated for unmatched routes. The prerender phase also generates `robots.txt` (with sitemap reference) and `sitemap.xml` (from the routes manifest with priority scoring). Base URL is configurable via `SITE_BASE_URL` env var, defaulting to `https://commitbee.dev`. Canonical `<link rel="canonical">` tags are rendered per-page in the landing and docs page components.
 
 ### DR-003: Cache Strategy
 
