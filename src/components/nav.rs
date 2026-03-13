@@ -7,7 +7,7 @@ use leptos::prelude::*;
 #[component]
 pub fn Nav() -> impl IntoView {
     view! {
-        <nav class="sticky top-0 z-50 w-full border-b border-honey/10 bg-surface/80 backdrop-blur-lg transition-colors">
+        <nav id="site-nav" class="sticky top-0 z-50 w-full border-b border-transparent bg-transparent transition-all duration-300 scrolled:border-honey/10 scrolled:bg-surface/80 scrolled:backdrop-blur-lg">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 // Logo
                 <a href="/" class="flex items-center gap-2 font-bold text-lg text-bark hover:text-honey transition-colors">

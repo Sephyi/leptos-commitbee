@@ -12,6 +12,12 @@ use leptos_router::{
 use crate::components::{footer::Footer, nav::Nav};
 use crate::pages::{docs::DocsPage, landing::Landing, not_found::NotFound};
 
+/// Rendered as a standalone page to produce the pre-rendered 404.html.
+#[component]
+fn NotFoundPage() -> impl IntoView {
+    view! { <NotFound/> }
+}
+
 /// Redirects /docs to /docs/getting-started via meta refresh (works without JS).
 #[component]
 fn DocsRedirect() -> impl IntoView {
@@ -32,6 +38,7 @@ pub fn App() -> impl IntoView {
                 <Route path=path!("/") view=Landing/>
                 <Route path=path!("/docs") view=DocsRedirect/>
                 <Route path=path!("/docs/:slug") view=DocsPage/>
+                <Route path=path!("/not-found") view=NotFoundPage/>
             </Routes>
             <Footer/>
         </Router>
@@ -52,6 +59,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
                 <link rel="alternate icon" href="/images/favicon.svg"/>
                 <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
+                <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="stylesheet" href=css_href/>
                 // Inline theme script: prevents FOUC
                 <script>{r#"
@@ -90,6 +98,15 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                         }
                         scan();
                         new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
+                    })();
+                "#}</script>
+                // Nav scroll transparency: toggle .scrolled class on #site-nav
+                <script>{r#"
+                    (function(){
+                        var nav=document.getElementById('site-nav');
+                        function u(){if(nav)nav.classList.toggle('scrolled',window.scrollY>4);}
+                        u();
+                        window.addEventListener('scroll',u,{passive:true});
                     })();
                 "#}</script>
                 // Link prefetching: fetch same-origin pages on hover for instant navigation

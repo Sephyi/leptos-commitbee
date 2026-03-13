@@ -13,6 +13,9 @@
 /* Class-based dark mode (toggle via .dark on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Scroll-aware nav: applied when user has scrolled past the hero */
+@custom-variant scrolled (&.scrolled);
+
 /* Cross-document view transitions (Chrome 126+, Safari 18+) */
 @view-transition {
   navigation: auto;
