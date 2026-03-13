@@ -24,8 +24,9 @@ pub fn DocsPage() -> impl IntoView {
                     <Meta name="description" content=page.description/>
                     <Meta property="og:title" content=format!("{} - CommitBee Docs", page.title)/>
                     <Meta property="og:description" content=page.description/>
+                    <Link rel="canonical" href=format!("https://commitbee.dev/docs/{}", current_slug)/>
 
-                    <div class="flex min-h-screen">
+                    <div id="main-content" class="flex min-h-screen">
                         // Left sidebar (sticky, full-height)
                         <div class="hidden lg:block">
                             <DocSidebar current_slug=current_slug.clone()/>
@@ -72,8 +73,9 @@ pub fn DocsPage() -> impl IntoView {
                             </nav>
                         </main>
 
-                        // Right TOC
+                        // Right TOC + scroll-spy highlighter
                         <DocToc headings=page.headings/>
+                        <crate::components::toc_highlighter::TocHighlighter/>
                     </div>
                 }.into_any()
             }
