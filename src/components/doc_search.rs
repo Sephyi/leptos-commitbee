@@ -11,17 +11,56 @@ pub fn DocSearch() -> impl IntoView {
     let (query, set_query) = signal(String::new());
     let (results, set_results) = signal::<Vec<SearchResult>>(vec![]);
     let (index, set_index) = signal::<Option<Vec<SearchEntry>>>(None);
+    let (selected_index, set_selected_index) = signal::<Option<usize>>(None);
 
-    // Listen for Cmd+K / Ctrl+K
+    // Listen for Cmd+K / Ctrl+K and arrow key navigation
     Effect::new(move || {
         let closure = Closure::<dyn Fn(web_sys::KeyboardEvent)>::new(
             move |e: web_sys::KeyboardEvent| {
-                if (e.meta_key() || e.ctrl_key()) && e.key() == "k" {
+                let key = e.key();
+                if (e.meta_key() || e.ctrl_key()) && key == "k" {
                     e.prevent_default();
                     set_is_open.update(|v| *v = !*v);
                 }
-                if e.key() == "Escape" {
+                if key == "Escape" {
                     set_is_open.set(false);
+                }
+                // Arrow key navigation within modal
+                if is_open.get_untracked() {
+                    let len = results.get_untracked().len();
+                    if key == "ArrowDown" {
+                        e.prevent_default();
+                        if len > 0 {
+                            set_selected_index.update(|idx| {
+                                *idx = Some(match *idx {
+                                    Some(i) => (i + 1) % len,
+                                    None => 0,
+                                });
+                            });
+                        }
+                    }
+                    if key == "ArrowUp" {
+                        e.prevent_default();
+                        if len > 0 {
+                            set_selected_index.update(|idx| {
+                                *idx = Some(match *idx {
+                                    Some(0) | None => len.saturating_sub(1),
+                                    Some(i) => i - 1,
+                                });
+                            });
+                        }
+                    }
+                    if key == "Enter"
+                        && let Some(i) = selected_index.get_untracked()
+                    {
+                        let r = results.get_untracked();
+                        if let Some(result) = r.get(i) {
+                            let href = format!("/docs/{}", result.slug);
+                            set_is_open.set(false);
+                            let window = web_sys::window().unwrap();
+                            let _ = window.location().set_href(&href);
+                        }
+                    }
                 }
             },
         );
@@ -31,6 +70,38 @@ pub fn DocSearch() -> impl IntoView {
             closure.as_ref().unchecked_ref(),
         );
         closure.forget();
+    });
+
+    // Scroll lock: prevent body scroll when modal is open
+    Effect::new(move || {
+        let open = is_open.get();
+        if let Some(document) = web_sys::window().and_then(|w| w.document())
+            && let Some(body) = document.body()
+        {
+            let _ = body
+                .style()
+                .set_property("overflow", if open { "hidden" } else { "" });
+        }
+    });
+
+    // Auto-focus the search input when modal opens
+    Effect::new(move || {
+        if is_open.get() {
+            // Use a short delay to ensure the DOM has rendered the input
+            let cb = Closure::<dyn Fn()>::new(move || {
+                if let Some(document) = web_sys::window().and_then(|w| w.document())
+                    && let Some(el) = document.query_selector("input[placeholder='Search documentation...']").ok().flatten()
+                {
+                    let _ = el.dyn_into::<web_sys::HtmlElement>().map(|el| el.focus());
+                }
+            });
+            let window = web_sys::window().unwrap();
+            let _ = window.set_timeout_with_callback_and_timeout_and_arguments_0(
+                cb.as_ref().unchecked_ref(),
+                50,
+            );
+            cb.forget();
+        }
     });
 
     // Lazy-load search index when modal opens
@@ -46,12 +117,10 @@ pub fn DocSearch() -> impl IntoView {
                 if let Ok(resp) = resp {
                     let resp: web_sys::Response = resp.unchecked_into();
                     if let Ok(json) = wasm_bindgen_futures::JsFuture::from(resp.text().unwrap()).await
+                        && let Some(text) = json.as_string()
+                        && let Ok(entries) = serde_json::from_str::<Vec<SearchEntry>>(&text)
                     {
-                        if let Some(text) = json.as_string() {
-                            if let Ok(entries) = serde_json::from_str::<Vec<SearchEntry>>(&text) {
-                                set_index.set(Some(entries));
-                            }
-                        }
+                        set_index.set(Some(entries));
                     }
                 }
             });
@@ -61,6 +130,7 @@ pub fn DocSearch() -> impl IntoView {
     // Perform search when query changes
     Effect::new(move || {
         let q = query.get();
+        set_selected_index.set(None);
         if q.is_empty() {
             set_results.set(vec![]);
             return;
@@ -148,12 +218,19 @@ pub fn DocSearch() -> impl IntoView {
                                 view! { <p class="p-4 text-sm text-comb text-center">"No results found"</p> }.into_any()
                             } else {
                                 r.into_iter()
-                                    .map(|result| {
+                                    .enumerate()
+                                    .map(|(i, result)| {
                                         let href = format!("/docs/{}", result.slug);
+                                        let is_selected = selected_index.get() == Some(i);
+                                        let class = if is_selected {
+                                            "block rounded-lg px-4 py-3 bg-honey/10 border border-honey/20 transition-colors"
+                                        } else {
+                                            "block rounded-lg px-4 py-3 hover:bg-honey/5 transition-colors"
+                                        };
                                         view! {
                                             <a
                                                 href=href
-                                                class="block rounded-lg px-4 py-3 hover:bg-honey/5 transition-colors"
+                                                class=class
                                                 on:click=move |_| set_is_open.set(false)
                                             >
                                                 <div class="text-sm font-medium text-bark">{result.title.clone()}</div>
