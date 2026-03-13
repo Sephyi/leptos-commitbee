@@ -1,6 +1,6 @@
 # CommitBee Web — Product Requirements Document
 
-**Version**: 1.1
+**Version**: 1.2
 **Date**: 2026-03-13
 **Status**: Phase 1 Implemented
 **Author**: [Sephyi](https://github.com/Sephyi) + [Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)
@@ -12,6 +12,7 @@
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.2 | 2026-03-13 | Fix stale wget reference in FR-030 (now Rust prerender binary), document bin-target requirement in FR-031, add CLAUDE.md |
 | 1.1 | 2026-03-13 | Phase 1 implemented — all FRs built, Leptos 0.8 (was 0.7+), cross-platform Rust prerender binary, web-sys non-optional for island compatibility |
 | 1.0 | 2026-03-13 | Initial PRD — landing page, documentation wiki, Leptos architecture, bee-themed design system, GitHub Pages deployment |
 
@@ -290,13 +291,13 @@ GitHub Actions workflow triggered on push to `development` branch:
 
 1. `cargo leptos build --release`
 2. Start Axum server locally in background
-3. Pre-render all routes to static HTML via wget
+3. Pre-render all routes to static HTML via cross-platform Rust binary (`src/bin/prerender.rs`)
 4. Add `404.html` for GitHub Pages SPA fallback
 5. Deploy `dist/` to GitHub Pages via `actions/deploy-pages`
 
 #### FR-031: mise Task Orchestration
 
-`mise.toml` with tasks: `dev` (cargo leptos watch), `build` (cargo leptos build --release), `content` (validate markdown frontmatter and links), `prerender` (pre-render all routes to static HTML via Rust binary), `fmt` (cargo fmt), `check` (clippy for both SSR and WASM).
+`mise.toml` with tasks: `dev` (cargo leptos watch), `build` (cargo leptos build --release), `content` (validate markdown frontmatter and links), `prerender` (pre-render all routes to static HTML via Rust binary), `fmt` (cargo fmt), `check` (clippy for both SSR and WASM). Note: `bin-target = "commitbee-web"` is required in `[package.metadata.leptos]` because the `[[bin]]` entry for the prerender binary creates a second binary target that confuses cargo-leptos.
 
 #### FR-032: Client-Side Routing
 

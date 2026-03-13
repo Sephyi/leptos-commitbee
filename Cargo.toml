@@ -75,6 +75,7 @@ ssr = [
 ]
 
 [package.metadata.leptos]
+bin-target = "commitbee-web"
 output-name = "commitbee-web"
 site-root = "target/site"
 site-pkg-dir = "pkg"

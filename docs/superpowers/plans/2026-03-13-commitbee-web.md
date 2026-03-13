@@ -110,9 +110,9 @@ edition = "2024"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.7" }
-leptos_meta = { version = "0.7" }
-leptos_router = { version = "0.7" }
+leptos = { version = "0.8" }
+leptos_meta = { version = "0.8" }
+leptos_router = { version = "0.8" }
 leptos_axum = { version = "0.7", optional = true }
 axum = { version = "0.8", optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
@@ -142,7 +142,7 @@ console_error_panic_hook = { version = "0.1", optional = true }
 sublime_fuzzy = { version = "0.7", optional = true }
 
 [build-dependencies]
-pulldown-cmark = { version = "0.12", features = ["html"] }
+pulldown-cmark = { version = "0.13", features = ["html"] }
 syntect = { version = "5", default-features = false, features = ["default-fancy"] }
 serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.9"
