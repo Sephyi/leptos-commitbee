@@ -1,0 +1,19 @@
+[tasks.dev]
+run = "cargo leptos watch"
+description = "Start dev server with hot reload"
+
+[tasks.build]
+run = "cargo leptos build --release"
+description = "Production build"
+
+[tasks.content]
+run = "cargo test --test content_check"
+description = "Validate markdown frontmatter and links"
+
+[tasks.fmt]
+run = "cargo fmt"
+description = "Format Rust code"
+
+[tasks.check]
+run = "cargo clippy --features ssr -- -D warnings && cargo clippy --features hydrate --target wasm32-unknown-unknown -- -D warnings"
+description = "Lint server and client code"
