@@ -8,6 +8,13 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 Website for [CommitBee](https://github.com/sephyi/commitbee) — cinematic landing page + docs wiki. Built with Leptos 0.8 islands, pre-rendered to static HTML for GitHub Pages.
 
+## Prerequisites
+
+- Rust nightly (`rust-toolchain.toml` specifies channel)
+- `wasm32-unknown-unknown` target (auto-installed via `rust-toolchain.toml`)
+- `cargo-leptos` (`cargo install cargo-leptos`)
+- `mise` (optional, for task orchestration — manual commands listed below)
+
 ## Quick Start
 
 ```bash
@@ -23,12 +30,26 @@ mise run build        # Production build (server + WASM)
 - `src/lib.rs` — App root + WASM hydrate entry
 - `src/app.rs` — Router, HTML shell, `<App/>` component
 - `src/pages/` — Landing (7 sections), docs, 404
-- `src/components/` — Islands (`theme_toggle`, `pipeline_demo`, `code_block`, `doc_search`) + SSR components
+- `src/components/` — Islands and SSR components (see classification table below)
 - `src/content/loader.rs` — `include!`s build.rs-generated content
 - `src/bin/prerender.rs` — Cross-platform static HTML pre-renderer (zero extra deps)
 - `build.rs` — Markdown pipeline: `content/docs/*.md` → `content_generated.rs` + `search_index.json` + `routes.txt`
 - `content/docs/` — 12 markdown files with YAML frontmatter
 - `style/` — Tailwind v4 CSS-first config + animations (no JS config)
+
+### Component Classification
+
+| Component | Type | Ships WASM | Purpose |
+| --- | --- | --- | --- |
+| `ThemeToggle` | `#[island]` | Yes | Dark/light mode toggle with localStorage |
+| `PipelineDemo` | `#[island]` | Yes | Animated 7-step pipeline walkthrough |
+| `CodeBlockActivator` | `#[island]` | Yes | Attaches copy-to-clipboard to `.copy-btn` elements |
+| `DocSearch` | `#[island]` | Yes | Cmd+K fuzzy search modal, lazy-loads search index |
+| `Nav` | `#[component]` | No | Sticky glassmorphism navigation header |
+| `Footer` | `#[component]` | No | Site footer with hex-bg pattern |
+| `ScrollReveal` | `#[component]` | No | Wraps children in `.reveal` div for scroll animation |
+| `DocSidebar` | `#[component]` | No | Sticky docs section tree with thin scrollbar |
+| `DocToc` | `#[component]` | No | Right-side table of contents |
 
 ## Commands
 
@@ -63,10 +84,12 @@ Valid sections: `Basics`, `Usage`, `Internals`, `Integration`, `Reference`
 ## Key Design Decisions
 
 1. **Islands architecture** — Only interactive components (`#[island]`) ship WASM; everything else is pure SSR HTML
-2. **Build-time content** — Markdown processed by `build.rs` into `const` statics via `include!` — zero runtime cost
-3. **Cross-platform prerender** — `src/bin/prerender.rs` uses only `std` (TcpStream HTTP/1.0, no shell deps)
-4. **Self-hosted fonts** — Inter + JetBrains Mono in `public/fonts/`, no external font CDN
-5. **Theme without FOUC** — Inline `<script>` in HTML shell applies dark class before first paint
+2. **Router is NOT hydrated** — All `<a>` links trigger full browser navigation (server round-trips). `leptos_router` provides SSR-side routing only. Do not use `<A>` component or expect client-side nav.
+3. **View Transitions + prefetch** — `@view-transition { navigation: auto; }` in tailwind.css gives cross-document transitions a SPA-like feel (Chrome 126+, Safari 18+). An inline prefetch script in `app.rs` pre-fetches same-origin pages on hover for near-instant navigation.
+4. **Build-time content** — Markdown processed by `build.rs` into `const` statics via `include!` — zero runtime cost
+5. **Cross-platform prerender** — `src/bin/prerender.rs` uses only `std` (TcpStream HTTP/1.0, no shell deps). Override port with `PRERENDER_PORT` env var.
+6. **Self-hosted fonts** — Inter + JetBrains Mono in `public/fonts/`, no external font CDN
+7. **Three load-bearing inline scripts in `app.rs`** — Must execute before WASM hydration, never move to islands: (1) theme class application (prevents FOUC), (2) scroll-reveal IntersectionObserver (reveals above-fold content instantly), (3) link prefetch on hover
 
 ## Leptos 0.8 Island Gotchas
 
@@ -78,13 +101,26 @@ Valid sections: `Basics`, `Usage`, `Internals`, `Integration`, `Reference`
 
 **Multiple `[[bin]]` targets break cargo-leptos.** When adding extra binaries (like `prerender`), you must set `bin-target = "commitbee-web"` in `[package.metadata.leptos]` so cargo-leptos knows which binary is the server.
 
+**`ssr` and `hydrate` features are mutually exclusive.** Never combine them. `cargo leptos` manages this automatically; manual `cargo` commands must specify one or the other.
+
+**`recursion_limit = "256"`** is set in `src/main.rs` because Leptos view macros expand deeply. If adding heavily nested views and hitting the limit, increase it.
+
 ## Gotchas
+
+### Build System
 
 - `cargo leptos watch` / `cargo leptos build` must be used for full builds (compiles both SSR + WASM + Tailwind in parallel)
 - `cargo check --features ssr` and `cargo check --features hydrate --target wasm32-unknown-unknown` are independent — both must pass
-- The `search_index.json` is generated by `build.rs` into `$OUT_DIR` and also copied to `target/site/` for serving
+- On a fresh clone, `search_index.json` is written to `target/site/` only if that directory exists. First build must be `cargo leptos build` (creates `target/site/`), not plain `cargo build`
 - `routes.txt` manifest is generated by `build.rs` — the prerender binary finds it by walking `target/build/`
 - cargo-leptos auto-generates `tailwind.config.js` (gitignored) — Tailwind v4 ignores it since we use CSS-first config in `style/tailwind.css`
+
+### CSS / Styling
+
+- Tailwind v4 uses `@source "../src/**/*.rs"` to scan Rust files for utility classes — classes in `build.rs` are NOT scanned, use CSS rules in `style/tailwind.css` instead
+- `.prose` is a custom component layer in `tailwind.css`, not the Tailwind typography plugin
+- Code blocks use a hardcoded `#2b303b` fallback background from syntect's base16-ocean.dark theme (set in `.code-block-wrapper` CSS rule)
+- `build.rs` strips syntect's outer `<pre>` wrapper to avoid nested `<pre>` tags — the background color is extracted and applied to the wrapper div
 
 ## Code Style
 
@@ -92,6 +128,11 @@ Valid sections: `Basics`, `Usage`, `Internals`, `Integration`, `Reference`
 - `cargo fmt` + `clippy` (enforced by hooks)
 - Bee-themed Tailwind tokens: `honey`, `nectar`, `comb`, `bark`, `pollen`, `surface`
 - License: PolyForm-Noncommercial-1.0.0 (REUSE compliant via `REUSE.toml`)
+
+## Claude Code Hooks
+
+- **PreToolUse**: `block-generated-files.sh` — prevents editing `$OUT_DIR` artifacts and generated files
+- **PostToolUse**: `rust-fmt.sh` — auto-formats any edited `.rs` file after changes
 
 ## References
 
