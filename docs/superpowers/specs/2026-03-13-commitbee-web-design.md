@@ -99,6 +99,8 @@ commitbee-web/
 │   ├── fonts/                # Inter + JetBrains Mono (self-hosted)
 │   └── images/               # OG images, favicon, bee assets
 ├── build.rs                  # Markdown processing pipeline
+├── tests/
+│   └── content_check.rs      # Validate frontmatter schema, internal links
 └── .github/
     └── workflows/
         └── deploy.yml        # Build + pre-render + deploy to GitHub Pages
@@ -109,7 +111,7 @@ commitbee-web/
 | Crate | Purpose |
 | --- | --- |
 | `leptos` (features: `islands`) | Framework with islands architecture |
-| `leptos_meta` | `<title>`, `<meta>` tag management |
+| `leptos_meta` | `<title>`, `<meta>`, OG tags per page |
 | `leptos_router` | Client-side routing |
 | `leptos_axum` | Axum integration for SSR |
 | `axum` | HTTP server (build-time only) |
@@ -118,6 +120,9 @@ commitbee-web/
 | `syntect` | Syntax highlighting |
 | `serde` + `serde_yaml` | Frontmatter parsing |
 | `tower-http` | Static file serving, compression |
+| `wasm-bindgen` | Rust-WASM bindings (required by islands) |
+| `web-sys` | Browser API access (localStorage, IntersectionObserver, Clipboard) |
+| `gloo` | Higher-level WASM utilities (optional, wraps web-sys) |
 
 ### 3.5 Build Pipeline
 
@@ -233,39 +238,44 @@ At build time (`build.rs`):
 
 ### 5.3 Section Structure
 
+Logical grouping determined by the `section` field in YAML frontmatter, **not** by directory hierarchy. All markdown files live flat in `content/docs/`.
+
 ```
-Basics/
-  getting-started.md
-  how-it-works.md
+Basics (section: "Basics")
+  getting-started.md    (order: 1)
+  how-it-works.md       (order: 2)
 
-Usage/
-  commands-and-flags.md
-  configuration.md
-  llm-providers.md
-  commit-splitting.md
+Usage (section: "Usage")
+  commands-and-flags.md (order: 1)
+  configuration.md      (order: 2)
+  llm-providers.md      (order: 3)
+  commit-splitting.md   (order: 4)
 
-Internals/
-  validation-pipeline.md
-  security-and-safety.md
-  supported-languages.md
+Internals (section: "Internals")
+  validation-pipeline.md  (order: 1)
+  security-and-safety.md  (order: 2)
+  supported-languages.md  (order: 3)
 
-Integration/
-  git-hooks.md
-  troubleshooting.md
+Integration (section: "Integration")
+  git-hooks.md          (order: 1)
+  troubleshooting.md    (order: 2)
 
-Reference/
-  architecture.md
+Reference (section: "Reference")
+  architecture.md       (order: 1)
 ```
+
+URL slugs are derived from filenames: `getting-started.md` becomes `/docs/getting-started`. No slug override mechanism — rename the file to change the URL.
 
 ### 5.4 Interactive Elements (Islands)
 
-- **Doc search** — client-side fuzzy search over pre-built index, `Cmd+K` / `Ctrl+K` keyboard shortcut
+- **Doc search** — client-side fuzzy search over pre-built index, `Cmd+K` / `Ctrl+K` keyboard shortcut. Search index emitted as a separate JSON file by `build.rs`, loaded lazily when the search modal opens (not baked into WASM to keep bundle small). Fuzzy matching via `sublime_fuzzy` or equivalent compiled into the search island.
 - **Code blocks** — copy-to-clipboard button, language label, syntax highlighting
 - **Mobile nav** — hamburger toggle for sidebar drawer
 
 ### 5.5 Navigation
 
-- Client-side routing via `leptos_router` — no full page reloads
+- Client-side routing via `leptos_router` for in-app link clicks (progressive enhancement)
+- Direct URL access always hits pre-rendered HTML (each route has its own `index.html`)
 - URL structure: `/docs/getting-started`, `/docs/configuration`, etc.
 - Prev/next links at bottom of each page
 - Breadcrumbs: Docs > Section > Page
@@ -317,8 +327,8 @@ Reference/
 
 ### 6.4 Scroll Animations
 
-- CSS-first using `animation-timeline: scroll()` and `animation-range`
-- Fallback: `IntersectionObserver` via `#[island]` for unsupported browsers
+- **Baseline implementation**: `IntersectionObserver` via `#[island]` — this is the primary, polished path that works in all browsers
+- **Progressive enhancement**: CSS `animation-timeline: scroll()` and `animation-range` for Chromium browsers (smoother scroll-linked timing)
 - Motion style: fade-up and slide-in, smooth and organic ("floating" not "snapping")
 - Respects `prefers-reduced-motion` — all animations disabled, content appears statically
 
@@ -341,13 +351,33 @@ Reference/
 ```
 On push to development:
   1. cargo leptos build --release
-  2. Start server locally
-  3. Pre-render all routes to static HTML
-  4. Collect output (HTML + WASM + CSS + fonts + images)
-  5. Deploy to GitHub Pages
+  2. Start Axum server locally (background, port 3000)
+  3. Pre-render: shell script iterates route manifest, wget each route
+     - Route manifest auto-generated from content pipeline (all doc slugs + landing page)
+     - wget --convert-links saves each route as path/index.html (e.g., docs/getting-started/index.html)
+     - This ensures direct URL access works on GitHub Pages without server-side routing
+  4. Copy WASM bundle, CSS, fonts, images alongside HTML into dist/
+  5. Add 404.html (copy of landing page or custom 404 content)
+  6. Deploy dist/ via actions/deploy-pages
 ```
 
-### 7.3 mise Tasks
+### 7.3 Pre-Render Route Manifest
+
+The route list is finite and enumerable, derived from two sources:
+
+1. **Landing page**: `/` (single route)
+2. **Doc pages**: one route per markdown file in `content/docs/` (e.g., `/docs/getting-started`)
+
+The `build.rs` script emits a `routes.txt` file to `$OUT_DIR` listing all routes. The CI pre-render script reads this file and `wget`s each route from the local server.
+
+### 7.4 Social Sharing and Favicons
+
+- **OG image**: 1200x630px, bee-themed, stored in `public/images/og.png`
+- **Favicon**: `favicon.svg` (scalable) + `favicon.ico` (legacy) + `apple-touch-icon.png` (180x180)
+- `leptos_meta` manages per-page `og:title`, `og:description`, `og:image` meta tags
+- Doc pages use their frontmatter `title` and `description` for OG tags
+
+### 7.5 mise Tasks
 
 ```toml
 [tasks.dev]

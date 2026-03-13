@@ -1,0 +1,19 @@
+# Build artifacts
+/target/
+/dist/
+
+# OS files
+.DS_Store
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Leptos
+/pkg/
+
+# Environment
+.env
+.env.local
