@@ -36,7 +36,7 @@ The site serves two purposes in a unified experience:
 - **cargo-leptos** as the build tool
 - **pulldown-cmark** for markdown to HTML conversion
 - **syntect** for syntax highlighting
-- **Tailwind CSS v4** for styling
+- **Tailwind CSS** for styling (v3 or v4 depending on cargo-leptos compatibility; v4 uses CSS-first config, v3 uses `tailwind.config.js` — either works, determine at project init)
 - **GitHub Actions** for CI/CD
 - **GitHub Pages** for hosting
 
@@ -56,7 +56,7 @@ The Axum server exists only as a build-time rendering tool. In production, every
 commitbee-web/
 ├── Cargo.toml
 ├── mise.toml                 # Task orchestration
-├── tailwind.config.js        # Tailwind configuration with bee theme
+├── tailwind.config.js        # Tailwind theme config (v3) or omitted if using v4 CSS-first
 ├── src/
 │   ├── main.rs               # Axum server entry
 │   ├── lib.rs                # Leptos app root + hydrate entry
@@ -76,8 +76,8 @@ commitbee-web/
 │   │   ├── doc_toc.rs        # Right-side table of contents
 │   │   └── scroll_reveal.rs  # Scroll animation wrapper
 │   └── content/
-│       ├── loader.rs         # Build-time markdown loader + frontmatter parser
-│       └── generated.rs      # Auto-generated: doc tree as const statics
+│       └── loader.rs         # Build-time markdown loader + frontmatter parser
+│                             # generated.rs is output to OUT_DIR by build.rs, included via include!()
 ├── content/
 │   └── docs/
 │       ├── getting-started.md
@@ -130,13 +130,16 @@ build.rs                          cargo-leptos
    ├─ Syntax highlight (syntect)       └─ wasm-opt optimization
    ├─ Extract heading tree for TOC
    ├─ Build search index
-   └─ Generate src/content/generated.rs
+   └─ Generate $OUT_DIR/content_generated.rs (included via include!())
 
 CI pre-render step:
-   ├─ Start server locally
-   ├─ Crawl all routes → static HTML
-   ├─ Collect HTML + WASM + CSS + fonts + images
-   └─ Deploy to GitHub Pages
+   ├─ Build release binary + WASM bundle
+   ├─ Start Axum server locally (background)
+   ├─ Pre-render via custom script: iterate known routes, wget each to static HTML
+   │   (route list derived from doc tree + landing page — finite, enumerable)
+   ├─ Collect HTML + WASM + CSS + fonts + images into dist/
+   ├─ Add 404.html for GitHub Pages SPA fallback
+   └─ Deploy dist/ to GitHub Pages via actions/deploy-pages
 ```
 
 ## 4. Landing Page
@@ -226,7 +229,7 @@ At build time (`build.rs`):
 3. Apply syntax highlighting via `syntect`
 4. Extract heading structure for TOC generation
 5. Build search index (title + headings + first 200 words per page)
-6. Generate `src/content/generated.rs` with doc tree as `const` statics
+6. Generate `$OUT_DIR/content_generated.rs` with doc tree as `const` statics (included via `include!()` in `loader.rs`)
 
 ### 5.3 Section Structure
 
