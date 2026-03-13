@@ -42,16 +42,8 @@ pub fn Nav() -> impl IntoView {
                     <super::doc_search::DocSearch/>
                     <super::theme_toggle::ThemeToggle/>
 
-                    // Mobile hamburger
-                    <button
-                        class="md:hidden p-2 text-comb hover:text-bark"
-                        aria-label="Toggle menu"
-                        id="mobile-menu-toggle"
-                    >
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
+                    // Mobile hamburger menu
+                    <super::mobile_menu::MobileMenu/>
                 </div>
             </div>
         </nav>
