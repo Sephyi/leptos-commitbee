@@ -11,44 +11,47 @@ description: "Install commitbee and generate your first commit message"
 
 # Getting Started
 
-## Installation
-
-### From source
+## Install
 
 ```bash
 cargo install commitbee
 ```
 
-### Homebrew
+Or build from source:
 
 ```bash
-brew install sephyi/tap/commitbee
+git clone https://github.com/sephyi/commitbee.git
+cd commitbee
+cargo build --release
+# Binary at ./target/release/commitbee
 ```
 
-### Requirements
+## Requirements
 
-- **Rust** 1.94+ (edition 2024)
-- **Ollama** running locally (default provider)
-- A model pulled in Ollama (recommended: `qwen3.5:4b`)
+- **Rust 1.94+** (edition 2024)
+- **Ollama** running locally — [ollama.ai](https://ollama.ai)
+- A model pulled: `ollama pull qwen3.5:4b`
 
-```bash
-ollama pull qwen3.5:4b
-```
-
-## Quick Start
+## First Run
 
 ```bash
-# Stage your changes
-git add src/feature.rs
+# Stage something
+git add src/my_change.rs
 
-# Generate and commit interactively
+# Generate a commit message
 commitbee
-
-# Preview without committing
-commitbee --dry-run
-
-# Auto-confirm and commit
-commitbee --yes
 ```
 
-That's it. CommitBee works with zero configuration if Ollama is running locally.
+That's it. Zero configuration needed if Ollama is running with `qwen3.5:4b`.
+
+CommitBee will analyze your staged changes, extract semantic information via tree-sitter, send a structured prompt to the LLM, validate the output, and present you with a commit message to approve.
+
+## Quick Config
+
+Want to customize things? Create a config file:
+
+```bash
+commitbee init
+```
+
+This creates a config at your platform's standard location (run `commitbee doctor` to see where). Edit it to change the model, provider, or formatting preferences.
