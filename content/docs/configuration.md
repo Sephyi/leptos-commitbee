@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "Configuration"
-order: 2
+order: 1
 section: "Usage"
 description: "Configure commitbee with TOML files, environment variables, and CLI flags"
 ---

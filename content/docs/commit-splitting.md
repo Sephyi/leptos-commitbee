@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "Commit Splitting"
-order: 4
+order: 3
 section: "Usage"
 description: "Automatic detection and splitting of multi-concern staged changes"
 ---

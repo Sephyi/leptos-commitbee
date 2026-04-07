@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "LLM Providers"
-order: 3
+order: 2
 section: "Usage"
 description: "Configure Ollama, OpenAI, and Anthropic providers for commit message generation"
 ---

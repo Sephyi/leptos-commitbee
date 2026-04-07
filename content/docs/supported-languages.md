@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "Supported Languages"
-order: 3
+order: 4
 section: "Internals"
 description: "10 languages supported by tree-sitter semantic analysis"
 ---

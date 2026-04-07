@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "Security & Safety"
-order: 2
+order: 3
 section: "Internals"
 description: "Secret scanning with 24 built-in patterns across 13 categories"
 ---

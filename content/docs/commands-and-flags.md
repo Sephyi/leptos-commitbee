@@ -5,7 +5,7 @@
 
 title: "Commands & Flags"
 order: 1
-section: "Usage"
+section: "Reference"
 description: "Complete reference for commitbee CLI commands and flags"
 ---
 

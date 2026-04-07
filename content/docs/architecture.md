@@ -5,7 +5,7 @@
 
 title: "Architecture"
 order: 1
-section: "Reference"
+section: "Internals"
 description: "Deep dive into commitbee's internal architecture and design decisions"
 ---
 
