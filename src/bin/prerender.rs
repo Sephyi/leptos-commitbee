@@ -197,35 +197,53 @@ fn http_get(host: &str, port: u16, path: &str) -> Result<String, Box<dyn std::er
     let mut response = String::new();
     stream.read_to_string(&mut response)?;
 
+    // Validate HTTP status code — reject non-200 responses (e.g. 404, 500).
+    let status_line = response.lines().next().unwrap_or("");
+    let status_code: u16 = status_line
+        .split_whitespace()
+        .nth(1)
+        .and_then(|c| c.parse().ok())
+        .unwrap_or(0);
+    if status_code != 200 {
+        return Err(format!("HTTP {status_code} for {path}: {status_line}").into());
+    }
+
     // Split headers from body at the blank line
     let body_start = response.find("\r\n\r\n").map(|i| i + 4).unwrap_or(0);
     Ok(response[body_start..].to_string())
 }
 
+/// Find the most recently modified `routes.txt` under `target/` that
+/// belongs to the commitbee-web build output. Using the newest avoids
+/// picking a stale artifact from a prior build.
 fn find_routes_txt() -> Option<PathBuf> {
     let build_dir = PathBuf::from("target");
-    walk_find(&build_dir, "routes.txt", "commitbee-web")
+    let mut candidates = collect_routes_files(&build_dir);
+    // Sort ascending by mtime; last element is the newest.
+    candidates.sort_by_key(|p| p.metadata().and_then(|m| m.modified()).ok());
+    candidates.into_iter().last()
 }
 
-fn walk_find(dir: &Path, filename: &str, path_contains: &str) -> Option<PathBuf> {
+fn collect_routes_files(dir: &Path) -> Vec<PathBuf> {
+    let mut result = Vec::new();
     if !dir.is_dir() {
-        return None;
+        return result;
     }
-    for entry in fs::read_dir(dir).ok()?.flatten() {
+    let Ok(entries) = fs::read_dir(dir) else {
+        return result;
+    };
+    for entry in entries.flatten() {
         let path = entry.path();
         if path.is_file()
-            && path.file_name().is_some_and(|f| f == filename)
-            && path.to_string_lossy().contains(path_contains)
+            && path.file_name().is_some_and(|f| f == "routes.txt")
+            && path.to_string_lossy().contains("commitbee-web")
         {
-            return Some(path);
-        }
-        if path.is_dir()
-            && let Some(found) = walk_find(&path, filename, path_contains)
-        {
-            return Some(found);
+            result.push(path);
+        } else if path.is_dir() {
+            result.extend(collect_routes_files(&path));
         }
     }
-    None
+    result
 }
 
 fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
