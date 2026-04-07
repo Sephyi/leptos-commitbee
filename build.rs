@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
-use pulldown_cmark::{html, Event, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
 use std::fmt::Write as FmtWrite;
 use std::fs;
@@ -128,11 +128,24 @@ fn parse_frontmatter(content: &str) -> (Frontmatter, String) {
         panic!("Missing YAML frontmatter delimiter");
     }
     let after_first = &content[3..];
+    // Match `---` only on its own line, not embedded in YAML values.
     let end = after_first
-        .find("---")
+        .find("\n---\n")
+        .or_else(|| after_first.find("\n---\r\n"))
+        .or_else(|| {
+            // Handle `---` at end of string (no trailing newline)
+            after_first
+                .find("\n---")
+                .filter(|&i| i + 4 >= after_first.len())
+        })
         .expect("Missing closing frontmatter delimiter");
     let yaml = &after_first[..end];
-    let markdown = &after_first[end + 3..];
+    let after_delim = &after_first[end..];
+    let markdown = after_delim
+        .strip_prefix("\n---\r\n")
+        .or_else(|| after_delim.strip_prefix("\n---\n"))
+        .or_else(|| after_delim.strip_prefix("\n---"))
+        .unwrap_or("");
 
     let fm: Frontmatter = serde_yaml::from_str(yaml).expect("Invalid frontmatter YAML");
 
@@ -184,6 +197,10 @@ fn render_markdown_with_syntax_highlighting(
     let mut code_lang = String::new();
     let mut code_content = String::new();
     let mut events: Vec<Event> = Vec::new();
+    // Heading ID injection: buffer heading content, emit <hN id="slug">…</hN> on End.
+    let mut heading_level: Option<u8> = None;
+    let mut heading_text = String::new();
+    let mut heading_inner: Vec<Event> = Vec::new();
 
     for event in parser {
         match event {
@@ -224,8 +241,37 @@ fn render_markdown_with_syntax_highlighting(
                 events.push(Event::Html(html.into()));
                 continue;
             }
-            Event::Start(Tag::Heading { .. }) => {
-                events.push(event);
+            // Heading start: begin buffering; the id is injected on End.
+            Event::Start(Tag::Heading { level, .. }) => {
+                heading_level = Some(level as u8);
+                heading_text.clear();
+                heading_inner.clear();
+                continue;
+            }
+            // Heading end: render buffered inner events, wrap in <hN id="slug">.
+            Event::End(TagEnd::Heading(_)) => {
+                if let Some(level) = heading_level.take() {
+                    let id = slug::slugify(&heading_text);
+                    let mut inner_html = String::new();
+                    html::push_html(&mut inner_html, heading_inner.drain(..));
+                    let heading_html = format!("<h{level} id=\"{id}\">{inner_html}</h{level}>\n");
+                    events.push(Event::Html(heading_html.into()));
+                }
+                continue;
+            }
+            // Inside a heading: collect plain text for slugification, all events for rendering.
+            Event::Text(ref text) if heading_level.is_some() => {
+                heading_text.push_str(text);
+                heading_inner.push(event);
+                continue;
+            }
+            Event::Code(ref code) if heading_level.is_some() => {
+                heading_text.push_str(code);
+                heading_inner.push(event);
+                continue;
+            }
+            _ if heading_level.is_some() => {
+                heading_inner.push(event);
                 continue;
             }
             _ => {}
@@ -238,52 +284,7 @@ fn render_markdown_with_syntax_highlighting(
 
     let mut html_output = String::new();
     html::push_html(&mut html_output, events.into_iter());
-
-    add_heading_ids(&html_output)
-}
-
-fn add_heading_ids(html: &str) -> String {
-    let mut result = html.to_string();
-    for level in 1..=6 {
-        let open_tag = format!("<h{level}>");
-        let close_tag = format!("</h{level}>");
-        let mut search_from = 0;
-        let mut new_result = String::new();
-
-        while let Some(start) = result[search_from..].find(&open_tag) {
-            let abs_start = search_from + start;
-            let content_start = abs_start + open_tag.len();
-            if let Some(end) = result[content_start..].find(&close_tag) {
-                let abs_end = content_start + end;
-                let text = &result[content_start..abs_end];
-                let plain = strip_html_tags(text);
-                let id = slug::slugify(&plain);
-
-                new_result.push_str(&result[search_from..abs_start]);
-                write!(new_result, "<h{level} id=\"{id}\">{text}{close_tag}").unwrap();
-                search_from = abs_end + close_tag.len();
-            } else {
-                break;
-            }
-        }
-        new_result.push_str(&result[search_from..]);
-        result = new_result;
-    }
-    result
-}
-
-fn strip_html_tags(s: &str) -> String {
-    let mut result = String::new();
-    let mut in_tag = false;
-    for ch in s.chars() {
-        match ch {
-            '<' => in_tag = true,
-            '>' => in_tag = false,
-            _ if !in_tag => result.push(ch),
-            _ => {}
-        }
-    }
-    result
+    html_output
 }
 
 /// Strip syntect's outer `<pre style="...">...</pre>` wrapper.
@@ -361,14 +362,8 @@ fn generate_rust_module(pages: &[DocPage], out_dir: &str) {
     for (i, page) in pages.iter().enumerate() {
         write!(code, "static HEADINGS_{i}: &[(u8, &str, &str)] = &[").unwrap();
         for h in &page.headings {
-            write!(
-                code,
-                "({}, \"{}\", \"{}\"),",
-                h.level,
-                h.text.replace('"', "\\\""),
-                h.id
-            )
-            .unwrap();
+            // Use raw strings to avoid escaping quotes in heading text.
+            write!(code, "({}, r#\"{}\"#, r#\"{}\"#),", h.level, h.text, h.id).unwrap();
         }
         writeln!(code, "];").unwrap();
     }
@@ -378,19 +373,10 @@ fn generate_rust_module(pages: &[DocPage], out_dir: &str) {
     for (i, page) in pages.iter().enumerate() {
         writeln!(code, "    DocPageData {{").unwrap();
         writeln!(code, "        slug: \"{}\",", page.slug).unwrap();
-        writeln!(
-            code,
-            "        title: \"{}\",",
-            page.title.replace('"', "\\\"")
-        )
-        .unwrap();
+        // Use raw strings for user-authored fields to avoid escaping quotes.
+        writeln!(code, "        title: r#\"{}\"#,", page.title).unwrap();
         writeln!(code, "        section: \"{}\",", page.section).unwrap();
-        writeln!(
-            code,
-            "        description: \"{}\",",
-            page.description.replace('"', "\\\"")
-        )
-        .unwrap();
+        writeln!(code, "        description: r#\"{}\"#,", page.description).unwrap();
         writeln!(code, "        order: {},", page.order).unwrap();
         writeln!(
             code,

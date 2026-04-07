@@ -22,7 +22,16 @@ fn parse_frontmatter(content: &str) -> Result<Frontmatter, String> {
         return Err("Missing opening ---".to_string());
     }
     let after_first = &content[3..];
-    let end = after_first.find("---").ok_or("Missing closing ---")?;
+    // Match `---` only on its own line, not embedded in YAML values.
+    let end = after_first
+        .find("\n---\n")
+        .or_else(|| after_first.find("\n---\r\n"))
+        .or_else(|| {
+            after_first
+                .find("\n---")
+                .filter(|&i| i + 4 >= after_first.len())
+        })
+        .ok_or("Missing closing ---")?;
     let yaml = &after_first[..end];
     serde_yaml::from_str(yaml).map_err(|e| e.to_string())
 }
