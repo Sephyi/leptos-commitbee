@@ -78,6 +78,13 @@ fn main() {
 
         let headings = extract_headings(&markdown);
         let html_content = render_markdown_with_syntax_highlighting(&markdown, &ss, theme);
+        let html_content = ammonia::Builder::default()
+            .add_generic_attributes(["id"])
+            .add_tag_attributes("span", ["style"])
+            .add_tag_attributes("pre", ["style"])
+            .add_tag_attributes("div", ["style"])
+            .clean(&html_content)
+            .to_string();
         let word_excerpt = extract_excerpt(&markdown, 200);
 
         routes.push(format!("/docs/{slug}"));

@@ -12,9 +12,11 @@ pub fn ThemeToggle() -> impl IntoView {
     // Initialize from localStorage or system preference
     Effect::new(move || {
         let window = web_sys::window().unwrap();
-        let storage = window.local_storage().unwrap().unwrap();
+        let storage = window.local_storage().ok().flatten();
 
-        let preference = storage.get_item("theme").unwrap_or(None);
+        let preference = storage
+            .as_ref()
+            .and_then(|s| s.get_item("theme").ok().flatten());
         let dark = match preference.as_deref() {
             Some("dark") => true,
             Some("light") => false,
@@ -35,7 +37,10 @@ pub fn ThemeToggle() -> impl IntoView {
         set_is_dark.set(new_dark);
         apply_theme(new_dark);
 
-        if let Some(storage) = web_sys::window().unwrap().local_storage().unwrap() {
+        if let Some(storage) = web_sys::window()
+            .and_then(|w| w.local_storage().ok())
+            .flatten()
+        {
             let _ = storage.set_item("theme", if new_dark { "dark" } else { "light" });
         }
     };

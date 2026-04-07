@@ -15,8 +15,8 @@ pub fn DocSearch() -> impl IntoView {
 
     // Listen for Cmd+K / Ctrl+K and arrow key navigation
     Effect::new(move || {
-        let closure = Closure::<dyn Fn(web_sys::KeyboardEvent)>::new(
-            move |e: web_sys::KeyboardEvent| {
+        let closure =
+            Closure::<dyn Fn(web_sys::KeyboardEvent)>::new(move |e: web_sys::KeyboardEvent| {
                 let key = e.key();
                 if (e.meta_key() || e.ctrl_key()) && key == "k" {
                     e.prevent_default();
@@ -62,13 +62,10 @@ pub fn DocSearch() -> impl IntoView {
                         }
                     }
                 }
-            },
-        );
+            });
         let window = web_sys::window().unwrap();
-        let _ = window.add_event_listener_with_callback(
-            "keydown",
-            closure.as_ref().unchecked_ref(),
-        );
+        let _ =
+            window.add_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref());
         closure.forget();
     });
 
@@ -90,7 +87,10 @@ pub fn DocSearch() -> impl IntoView {
             // Use a short delay to ensure the DOM has rendered the input
             let cb = Closure::<dyn Fn()>::new(move || {
                 if let Some(document) = web_sys::window().and_then(|w| w.document())
-                    && let Some(el) = document.query_selector("input[placeholder='Search documentation...']").ok().flatten()
+                    && let Some(el) = document
+                        .query_selector("input[placeholder='Search documentation...']")
+                        .ok()
+                        .flatten()
                 {
                     let _ = el.dyn_into::<web_sys::HtmlElement>().map(|el| el.focus());
                 }
@@ -116,7 +116,10 @@ pub fn DocSearch() -> impl IntoView {
 
                 if let Ok(resp) = resp {
                     let resp: web_sys::Response = resp.unchecked_into();
-                    if let Ok(json) = wasm_bindgen_futures::JsFuture::from(resp.text().unwrap()).await
+                    if resp.ok()
+                        && let Ok(text_promise) = resp.text()
+                        && let Ok(json) =
+                            wasm_bindgen_futures::JsFuture::from(text_promise).await
                         && let Some(text) = json.as_string()
                         && let Ok(entries) = serde_json::from_str::<Vec<SearchEntry>>(&text)
                     {
