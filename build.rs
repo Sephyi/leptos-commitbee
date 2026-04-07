@@ -454,10 +454,11 @@ fn generate_search_index(pages: &[DocPage], out_dir: &str) {
     fs::write(Path::new(out_dir).join("search_index.json"), &json).unwrap();
 
     // Write to target/site/ so cargo-leptos serves it as a static asset.
+    // create_dir_all ensures this works on a first build before cargo-leptos
+    // has had a chance to create target/site/.
     let site_dir = Path::new("target/site");
-    if site_dir.exists() {
-        fs::write(site_dir.join("search_index.json"), &json).unwrap();
-    }
+    fs::create_dir_all(site_dir).unwrap();
+    fs::write(site_dir.join("search_index.json"), &json).unwrap();
 }
 
 fn generate_empty_module(out_dir: &str) {
