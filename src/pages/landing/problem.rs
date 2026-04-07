@@ -7,7 +7,7 @@ use leptos::prelude::*;
 #[component]
 pub fn ProblemSection() -> impl IntoView {
     view! {
-        <section class="py-24 bg-surface-raised">
+        <section class="py-24 bg-surface/55 backdrop-blur-md [mask-image:linear-gradient(to_bottom,transparent_0,black_140px)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0,black_140px)]">
             <div class="mx-auto max-w-6xl px-4">
                 <crate::components::scroll_reveal::ScrollReveal>
                     <h2 class="text-3xl font-bold text-center text-bark sm:text-4xl">
