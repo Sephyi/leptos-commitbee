@@ -9,8 +9,13 @@ use leptos_router::{
     path,
 };
 
-use crate::components::{footer::Footer, nav::Nav};
-use crate::pages::{docs::DocsPage, landing::Landing, not_found::NotFound};
+use crate::components::{bg_shader::BgShader, footer::Footer, nav::Nav};
+use crate::pages::{
+    docs::DocsPage,
+    landing::Landing,
+    legal::{Imprint, Privacy},
+    not_found::NotFound,
+};
 
 /// Rendered as a standalone page to produce the pre-rendered 404.html.
 #[component]
@@ -33,11 +38,17 @@ pub fn App() -> impl IntoView {
 
     view! {
         <Router>
+            // Site-wide animated shader background. Mounted once at the App
+            // root, sits behind all routes via `position: fixed; z-index: -10`.
+            // Content sections layer over it with backdrop-blur glassmorphism.
+            <BgShader/>
             <Nav/>
             <Routes fallback=|| view! { <NotFound/> }>
                 <Route path=path!("/") view=Landing/>
                 <Route path=path!("/docs") view=DocsRedirect/>
                 <Route path=path!("/docs/:slug") view=DocsPage/>
+                <Route path=path!("/imprint") view=Imprint/>
+                <Route path=path!("/privacy") view=Privacy/>
                 <Route path=path!("/not-found") view=NotFoundPage/>
             </Routes>
             <Footer/>
@@ -69,7 +80,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/>
                 <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
-                <link rel="preload" href="/fonts/Monotalic-Light.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
+                <link rel="preload" href="/fonts/Archia-Regular.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="stylesheet" href=css_href/>
                 // Inline theme script: prevents FOUC
                 <script>{r#"
@@ -90,7 +101,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <HydrationScripts options islands=true/>
                 <MetaTags/>
             </head>
-            <body class="antialiased bg-surface text-bark">
+            <body class="antialiased bg-surface text-bark relative">
                 <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-honey focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg">"Skip to content"</a>
                 <App/>
                 // Inline scroll-reveal observer: runs before WASM, no hydration dependency
