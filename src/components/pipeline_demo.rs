@@ -84,7 +84,7 @@ pub fn PipelineDemo() -> impl IntoView {
     });
 
     view! {
-        <div class="rounded-xl border border-honey/20 bg-surface-raised overflow-hidden">
+        <div class="overflow-hidden border rounded-xl border-honey/20 bg-surface-raised">
             // Controls
             <div class="flex items-center gap-3 px-6 py-4 border-b border-honey/10">
                 <button
@@ -98,16 +98,20 @@ pub fn PipelineDemo() -> impl IntoView {
                             set_is_playing.set(true);
                         }
                     }
-                    class="rounded-lg bg-honey px-4 py-2 text-sm font-medium text-white hover:bg-honey-dark transition-colors"
+                    class="px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-honey hover:bg-honey-dark"
                 >
                     {move || if is_playing.get() { "Pause" } else { "Play" }}
                 </button>
                 <button
                     on:click=move |_| {
                         set_is_playing.set(false);
-                        set_current_step.update(|s| if *s > 0 { *s -= 1 });
+                        set_current_step.update(|s| {
+                            if *s > 0 {
+                                *s -= 1;
+                            }
+                        });
                     }
-                    class="rounded-lg border border-honey/20 px-3 py-2 text-sm text-comb hover:text-bark transition-colors"
+                    class="px-3 py-2 text-sm transition-colors border rounded-lg border-honey/20 text-comb hover:text-bark"
                     disabled=move || current_step.get() == 0
                 >
                     "← Prev"
@@ -115,10 +119,14 @@ pub fn PipelineDemo() -> impl IntoView {
                 <button
                     on:click=move |_| {
                         set_is_playing.set(false);
-                        set_current_step.update(|s| if *s < STEPS.len() - 1 { *s += 1 });
+                        set_current_step.update(|s| {
+                            if *s < STEPS.len() - 1 {
+                                *s += 1;
+                            }
+                        });
                     }
-                    class="rounded-lg border border-honey/20 px-3 py-2 text-sm text-comb hover:text-bark transition-colors"
-                    disabled=move || current_step.get() >= STEPS.len() - 1
+                    class="px-3 py-2 text-sm transition-colors border rounded-lg border-honey/20 text-comb hover:text-bark"
+                    disabled=move || { current_step.get() >= STEPS.len() - 1 }
                 >
                     "Next →"
                 </button>
@@ -171,7 +179,7 @@ pub fn PipelineDemo() -> impl IntoView {
                                     <p class="text-sm text-comb">{step.description}</p>
                                 </div>
                             </div>
-                            <pre class="rounded-lg bg-pollen p-4 font-mono text-sm text-bark whitespace-pre-wrap">
+                            <pre class="p-4 font-mono text-sm whitespace-pre-wrap rounded-lg bg-pollen text-bark">
                                 {step.detail}
                             </pre>
                         </div>
