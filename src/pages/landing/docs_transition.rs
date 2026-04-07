@@ -7,7 +7,7 @@ use leptos::prelude::*;
 #[component]
 pub fn DocsTransitionSection() -> impl IntoView {
     view! {
-        <section class="py-24">
+        <section class="py-24 bg-surface/55 backdrop-blur-md">
             <div class="mx-auto max-w-5xl px-4">
                 <crate::components::scroll_reveal::ScrollReveal>
                     <h2 class="text-3xl font-bold text-center text-bark sm:text-4xl">
