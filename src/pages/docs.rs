@@ -32,8 +32,10 @@ pub fn DocsPage() -> impl IntoView {
                             <DocSidebar current_slug=current_slug.clone()/>
                         </div>
 
-                        // Main content
-                        <main class="flex-1 min-w-0 px-6 py-8 lg:px-10">
+                        // Main content — glass card so the shader background
+                        // shows through faintly while the article stays
+                        // readable.
+                        <main class="flex-1 min-w-0 px-6 py-8 lg:px-10 bg-surface/65 backdrop-blur-md">
                             // Breadcrumbs
                             <nav class="mb-6 text-sm text-comb" aria-label="Breadcrumb">
                                 <a href="/docs/getting-started" class="hover:text-honey transition-colors">"Docs"</a>
