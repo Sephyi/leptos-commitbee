@@ -6,14 +6,14 @@
 title: "Security & Safety"
 order: 2
 section: "Internals"
-description: "Secret scanning with 25 built-in patterns across 13 categories"
+description: "Secret scanning with 24 built-in patterns across 13 categories"
 ---
 
 # Security & Safety
 
 ## Secret Scanning
 
-Before anything is sent to an LLM, CommitBee scans all staged content with **25 built-in patterns** across 13 categories:
+Before anything is sent to an LLM, CommitBee scans all staged content with **24 built-in patterns** across 13 categories:
 
 | Category | Patterns |
 | --- | --- |

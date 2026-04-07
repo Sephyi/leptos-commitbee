@@ -34,7 +34,7 @@ src/
     ├── analyzer.rs      # AnalyzerService — tree-sitter parsing via rayon
     ├── context.rs       # ContextBuilder — evidence flags, token budget
     ├── differ.rs        # AstDiffer — structural comparison of old/new symbols
-    ├── safety.rs        # Secret scanning (25 patterns), conflict detection
+    ├── safety.rs        # Secret scanning (24 patterns), conflict detection
     ├── sanitizer.rs     # CommitSanitizer + CommitValidator
     ├── splitter.rs      # CommitSplitter — diff-shape + Jaccard clustering
     ├── progress.rs      # Progress indicators (indicatif spinners, TTY-aware)
