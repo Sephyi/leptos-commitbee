@@ -12,7 +12,12 @@ pub fn DocSearch() -> impl IntoView {
     let (results, set_results) = signal::<Vec<SearchResult>>(vec![]);
     let (index, set_index) = signal::<Option<Vec<SearchEntry>>>(None);
     let (selected_index, set_selected_index) = signal::<Option<usize>>(None);
-    let (last_open, set_last_open) = signal(false);
+    // Tracks the previous `is_open` value across effect runs so we can detect
+    // a true→false transition and restore focus to the trigger. Using a
+    // `StoredValue` (non-reactive) avoids writing to a signal from inside an
+    // effect, which in Leptos 0.8 made the focus-restore effect interact with
+    // `is_open` in a way that prevented the modal from opening reliably.
+    let prev_open = StoredValue::new(false);
 
     // Listen for Cmd+K / Ctrl+K and arrow key navigation
     Effect::new(move || {
@@ -94,6 +99,17 @@ pub fn DocSearch() -> impl IntoView {
         let _ =
             window.add_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref());
         closure.forget();
+
+        // Listen for a custom open-search event so other components (e.g. the
+        // mobile nav search button) can open the modal without sharing signals.
+        let open_closure = Closure::<dyn Fn(web_sys::Event)>::new(move |_| {
+            set_is_open.set(true);
+        });
+        let _ = window.add_event_listener_with_callback(
+            "commitbee:open-search",
+            open_closure.as_ref().unchecked_ref(),
+        );
+        open_closure.forget();
     });
 
     // Scroll lock: prevent body scroll when modal is open
@@ -111,8 +127,8 @@ pub fn DocSearch() -> impl IntoView {
     // Restore focus to trigger button when modal closes
     Effect::new(move || {
         let open = is_open.get();
-        let last = last_open.get_untracked();
-        set_last_open.set(open);
+        let last = prev_open.get_value();
+        prev_open.set_value(open);
         if !open && last {
             if let Some(document) = web_sys::window().and_then(|w| w.document())
                 && let Some(el) = document.get_element_by_id("doc-search-trigger")
@@ -221,13 +237,13 @@ pub fn DocSearch() -> impl IntoView {
         <button
             id="doc-search-trigger"
             on:click=move |_| set_is_open.set(true)
-            class="hidden md:flex items-center gap-2 rounded-lg border border-honey/20 bg-surface px-3 py-1.5 text-sm text-comb hover:border-honey/40 transition-colors"
+            class="hidden md:flex w-full items-center gap-2 rounded-lg border border-honey/20 bg-surface px-3 py-1.5 text-sm text-comb hover:border-honey/40 transition-colors"
         >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             "Search docs"
-            <kbd class="ml-2 rounded bg-surface-raised px-1.5 py-0.5 text-xs text-comb">"⌘K"</kbd>
+            <kbd class="ml-auto rounded bg-surface-raised px-1.5 py-0.5 text-xs text-comb">"⌘K"</kbd>
         </button>
 
         // Modal overlay
@@ -295,6 +311,32 @@ pub fn DocSearch() -> impl IntoView {
                 </div>
             </div>
         </Show>
+    }
+}
+
+/// Mobile-only search trigger. Lives in the nav bar on small screens and
+/// dispatches a `commitbee:open-search` window event that the `DocSearch`
+/// island listens for. Kept as a separate tiny island so the parent `Nav`
+/// can stay a pure SSR component.
+#[island]
+pub fn MobileSearchButton() -> impl IntoView {
+    view! {
+        <button
+            type="button"
+            class="md:hidden p-2 text-comb hover:text-bark transition-colors"
+            aria-label="Search documentation"
+            on:click=move |_| {
+                if let Some(window) = web_sys::window()
+                    && let Ok(event) = web_sys::Event::new("commitbee:open-search")
+                {
+                    let _ = window.dispatch_event(&event);
+                }
+            }
+        >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </button>
     }
 }
 

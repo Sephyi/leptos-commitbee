@@ -44,7 +44,7 @@ pub fn DocsPage() -> impl IntoView {
                             </nav>
 
                             // Rendered markdown content
-                            <article class="prose max-w-prose">
+                            <article class="prose max-w-none">
                                 <div inner_html=page.html_content/>
                             </article>
 

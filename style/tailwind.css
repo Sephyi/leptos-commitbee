@@ -57,6 +57,14 @@
   src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "Archia";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/Archia-Regular.woff2") format("woff2");
+}
+
 @layer base {
   :root {
     --honey: #f59e0b;
@@ -135,9 +143,17 @@
     border-radius: 2px;
   }
 
-  /* Code block wrapper: unified background, override prose pre defaults */
+  /* Code block wrapper: unified background, override prose pre defaults.
+   * NOTE: build.rs emits the wrapper/header HTML; Tailwind v4 does not scan
+   * build.rs strings, so all structural styles must live here, not as
+   * utility classes on the elements. */
   .code-block-wrapper {
     background-color: #2b303b;
+    position: relative;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .code-block-wrapper pre {
@@ -146,9 +162,39 @@
     margin: 0 !important;
   }
 
+  .code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  }
+
+  .code-block-header span {
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  .code-block-header .copy-btn {
+    color: rgb(255 255 255 / 0.4);
+    opacity: 0;
+    transition: opacity 150ms, color 150ms;
+  }
+
+  .code-block-wrapper:hover .code-block-header .copy-btn,
+  .code-block-header .copy-btn:focus {
+    opacity: 1;
+  }
+
+  .code-block-header .copy-btn:hover {
+    color: rgb(255 255 255 / 0.8);
+  }
+
   .prose {
     color: var(--color-bark);
     line-height: 1.625;
+    font-family: "Archia", "Inter", system-ui, sans-serif;
   }
 
   .prose h1 {
@@ -252,16 +298,27 @@
     border-collapse: collapse;
   }
 
+  .prose thead {
+    background-color: color-mix(in oklch, var(--color-honey) 4%, transparent);
+  }
+
   .prose th {
-    border-bottom: 1px solid color-mix(in oklch, var(--color-honey) 20%, transparent);
-    padding: 0.5rem 1rem;
+    border-bottom: 1px solid color-mix(in oklch, var(--color-honey) 10%, transparent);
+    padding: 0.625rem 1rem;
     text-align: left;
     font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-bark);
   }
 
   .prose td {
-    border-bottom: 1px solid color-mix(in oklch, var(--color-honey) 5%, transparent);
-    padding: 0.5rem 1rem;
+    border-bottom: 1px solid color-mix(in oklch, var(--color-honey) 6%, transparent);
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
+  }
+
+  .prose tbody tr:last-child td {
+    border-bottom: none;
   }
 
   .prose hr {

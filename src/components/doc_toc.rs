@@ -16,7 +16,7 @@ pub fn DocToc(headings: &'static [(u8, &'static str, &'static str)]) -> impl Int
     }
 
     view! {
-        <aside class="hidden xl:block w-56 shrink-0 pl-8">
+        <aside class="hidden xl:block w-64 shrink-0 pl-8 pr-4">
             <div class="sticky top-20">
                 <h4 class="mb-3 text-xs font-semibold uppercase tracking-wider text-comb">"On this page"</h4>
                 <ul class="space-y-1 border-l border-honey/10">

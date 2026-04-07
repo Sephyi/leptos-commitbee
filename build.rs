@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
-use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, html};
+use pulldown_cmark::{html, Event, Options, Parser, Tag, TagEnd};
 use serde::Deserialize;
 use std::fmt::Write as FmtWrite;
 use std::fs;
@@ -79,10 +79,12 @@ fn main() {
         let headings = extract_headings(&markdown);
         let html_content = render_markdown_with_syntax_highlighting(&markdown, &ss, theme);
         let html_content = ammonia::Builder::default()
-            .add_generic_attributes(["id"])
+            .add_generic_attributes(["id", "class"])
             .add_tag_attributes("span", ["style"])
             .add_tag_attributes("pre", ["style"])
-            .add_tag_attributes("div", ["style"])
+            .add_tag_attributes("div", ["style", "data-lang"])
+            .add_tag_attributes("button", ["data-code"])
+            .add_tags(["button"])
             .clean(&html_content)
             .to_string();
         let word_excerpt = extract_excerpt(&markdown, 200);
@@ -453,12 +455,13 @@ fn generate_search_index(pages: &[DocPage], out_dir: &str) {
 
     fs::write(Path::new(out_dir).join("search_index.json"), &json).unwrap();
 
-    // Write to target/site/ so cargo-leptos serves it as a static asset.
-    // create_dir_all ensures this works on a first build before cargo-leptos
-    // has had a chance to create target/site/.
-    let site_dir = Path::new("target/site");
-    fs::create_dir_all(site_dir).unwrap();
-    fs::write(site_dir.join("search_index.json"), &json).unwrap();
+    // Write into the cargo-leptos `assets-dir` (public/) so it's copied to
+    // target/site/ as part of the normal asset pipeline. Writing directly to
+    // target/site/ races with cargo-leptos's asset copy and can leave the file
+    // missing on `cargo check` runs that don't go through cargo-leptos.
+    let public_dir = Path::new("public");
+    fs::create_dir_all(public_dir).unwrap();
+    fs::write(public_dir.join("search_index.json"), &json).unwrap();
 }
 
 fn generate_empty_module(out_dir: &str) {
