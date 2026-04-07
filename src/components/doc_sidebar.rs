@@ -11,7 +11,7 @@ pub fn DocSidebar(#[prop(into)] current_slug: String) -> impl IntoView {
     let tree = loader::doc_tree();
 
     view! {
-        <aside class="w-60 shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-honey/10 bg-surface-raised overflow-y-auto sidebar-scroll">
+        <aside class="w-60 shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-honey/10 bg-surface/60 backdrop-blur-md overflow-y-auto sidebar-scroll">
             <nav aria-label="Documentation" class="px-4 py-6">
                 {tree
                     .into_iter()
