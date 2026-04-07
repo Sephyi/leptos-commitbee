@@ -13,7 +13,7 @@ use crate::components::{bg_shader::BgShader, footer::Footer, nav::Nav};
 use crate::pages::{
     docs::DocsPage,
     landing::Landing,
-    legal::{Imprint, Privacy},
+    // TODO: legal::{Imprint, Privacy},
     not_found::NotFound,
 };
 
@@ -47,8 +47,8 @@ pub fn App() -> impl IntoView {
                 <Route path=path!("/") view=Landing/>
                 <Route path=path!("/docs") view=DocsRedirect/>
                 <Route path=path!("/docs/:slug") view=DocsPage/>
-                <Route path=path!("/imprint") view=Imprint/>
-                <Route path=path!("/privacy") view=Privacy/>
+                // TODO: <Route path=path!("/imprint") view=Imprint/>
+                // TODO: <Route path=path!("/privacy") view=Privacy/>
                 <Route path=path!("/not-found") view=NotFoundPage/>
             </Routes>
             <Footer/>

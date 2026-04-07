@@ -35,9 +35,9 @@ pub fn Landing() -> impl IntoView {
             <HeroSection/>
             <ProblemSection/>
             <PipelineSection/>
-            <DifferentiatorsSection/>
-            <ComparisonSection/>
-            <InstallSection/>
+            // TODO: <DifferentiatorsSection/>
+            // TODO: <ComparisonSection/>
+            // TODO: <InstallSection/>
             <DocsTransitionSection/>
             <crate::components::code_block::CodeBlockActivator/>
         </main>

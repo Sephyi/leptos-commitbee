@@ -26,7 +26,9 @@ pub fn Nav() -> impl IntoView {
                 // -mr-2 cancels the trailing icon button's internal p-2 so its
                 // visible right edge aligns exactly with the px-4 nav boundary
                 // (which in turn matches the TOC content right edge).
-                <div class="relative z-10 flex items-center -mr-2">
+                // TODO: Temporarily removed the theme toggle
+                // <div class="relative z-10 flex items-center -mr-2">
+                <div class="relative z-10 flex items-center">
                     <div class="items-center hidden gap-5 md:flex">
                         <a href="/" class="text-sm font-medium transition-colors text-comb hover:text-bark">"Home"</a>
                         <a href="/docs/getting-started" class="text-sm font-medium transition-colors text-comb hover:text-bark">"Docs"</a>
@@ -47,7 +49,7 @@ pub fn Nav() -> impl IntoView {
                             "crates.io"
                         </a>
                     </div>
-                    <super::theme_toggle::ThemeToggle/>
+                    // TODO: <super::theme_toggle::ThemeToggle/>
 
                     // Mobile-only: search icon + hamburger
                     <super::doc_search::MobileSearchButton/>

@@ -17,18 +17,18 @@ pub fn Footer() -> impl IntoView {
                 "commitbee"
             </h2>
             <div class="w-full px-4 py-4">
-                <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-comb">
+                <div class="flex flex-wrap items-center justify-between text-xs gap-x-4 gap-y-2 text-comb">
                     <span class="flex items-center gap-1.5">
                         <span class="text-base">"🐝"</span>
                         "© 2026 "
-                        <a href="https://sephy.io" target="_blank" rel="noopener noreferrer" class="hover:text-honey transition-colors">"Sephyi"</a>
+                        <a href="https://sephy.io" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-honey">"Sephyi"</a>
                     </span>
                     <nav class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <a href="/docs/getting-started" class="hover:text-honey transition-colors">"Docs"</a>
-                        <a href="https://github.com/sephyi/commitbee" target="_blank" rel="noopener noreferrer" class="hover:text-honey transition-colors">"GitHub"</a>
-                        <a href="https://github.com/sponsors/Sephyi" target="_blank" rel="noopener noreferrer" class="hover:text-honey transition-colors">"Sponsor"</a>
-                        <a href="/imprint" class="hover:text-honey transition-colors">"Imprint"</a>
-                        <a href="/privacy" class="hover:text-honey transition-colors">"Privacy"</a>
+                        <a href="/docs/getting-started" class="transition-colors hover:text-honey">"Docs"</a>
+                        <a href="https://github.com/sephyi/commitbee" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-honey">"GitHub"</a>
+                        <a href="https://github.com/sponsors/Sephyi" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-honey">"Sponsor"</a>
+                        // TODO: <a href="/imprint" class="transition-colors hover:text-honey">"Imprint"</a>
+                        // TODO: <a href="/privacy" class="transition-colors hover:text-honey">"Privacy"</a>
                     </nav>
                 </div>
             </div>

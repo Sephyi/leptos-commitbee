@@ -56,8 +56,8 @@ fn main() {
     let mut routes = vec![
         "/".to_string(),
         "/docs".to_string(),
-        "/imprint".to_string(),
-        "/privacy".to_string(),
+        // TODO: "/imprint".to_string(),
+        // TODO: "/privacy".to_string(),
         "/not-found".to_string(),
     ];
 
@@ -238,7 +238,7 @@ fn render_markdown_with_syntax_highlighting(
                     };
 
                 let html = format!(
-                    r#"<div class="code-block-wrapper relative group rounded-lg overflow-hidden my-6" data-lang="{lang_display}"{bg_style}><div class="code-block-header flex items-center justify-between px-4 py-2 text-xs border-b border-white/10"><span class="text-white/50">{lang_display}</span><button class="copy-btn opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-white/40 hover:text-white/80" data-code="{escaped}">Copy</button></div><pre><code>{highlighted}</code></pre></div>"#,
+                    r#"<div class="relative my-6 overflow-hidden rounded-lg code-block-wrapper group" data-lang="{lang_display}"{bg_style}><div class="flex items-center justify-between px-4 py-2 text-xs border-b code-block-header border-white/10"><span class="text-white/50">{lang_display}</span><button class="transition-opacity opacity-0 copy-btn group-hover:opacity-100 focus:opacity-100 text-white/40 hover:text-white/80" data-code="{escaped}">Copy</button></div><pre><code>{highlighted}</code></pre></div>"#,
                     escaped = html_escape(&code_content)
                 );
 
