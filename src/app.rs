@@ -55,7 +55,14 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'"/>
+                // CSP notes:
+                //   script-src 'unsafe-inline': required — Leptos HydrationScripts injects inline
+                //     <script> tags containing per-build hashed bundle filenames; static hash-based
+                //     CSP is infeasible without server-side nonce injection.
+                //     'unsafe-eval' was dropped: Leptos 0.8 WASM uses WebAssembly.instantiateStreaming()
+                //     and does not require dynamic code evaluation.
+                //   style-src 'unsafe-inline': required — Tailwind v4 injects <style> elements at runtime.
+                <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'"/>
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
                 <link rel="alternate icon" href="/images/favicon.svg"/>
                 <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>

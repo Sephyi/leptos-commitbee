@@ -136,6 +136,15 @@ Valid sections: `Basics`, `Usage`, `Internals`, `Integration`, `Reference`
 - **PreToolUse**: `block-generated-files.sh` — prevents editing `$OUT_DIR` artifacts and generated files
 - **PostToolUse**: `rust-fmt.sh` — auto-formats any edited `.rs` file after changes
 
+## CSP Limitations (Issue #17)
+
+The `Content-Security-Policy` meta tag in `src/app.rs` retains two `'unsafe-inline'` directives that cannot be removed without significant infrastructure changes:
+
+- **`script-src 'unsafe-inline'`**: `HydrationScripts` (from `leptos_meta`) generates inline `<script>` tags at render time whose content includes per-build hashed bundle filenames. Because the filenames change on every build, precomputing static SHA-256 hashes in the CSP is infeasible. Removal would require server-side nonce injection, which conflicts with the static pre-render deployment model.
+- **`style-src 'unsafe-inline'`**: Tailwind v4 injects inline `<style>` elements at runtime.
+
+**`'unsafe-eval'` was removed** (2026-04-07): Leptos 0.8 WASM uses `WebAssembly.instantiateStreaming()` and does not require dynamic code evaluation. Confirmed working via `cargo check --features ssr` after removal.
+
 ## References
 
 - **PRD & Roadmap**: `PRD.md`
