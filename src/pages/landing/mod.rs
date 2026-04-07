@@ -29,7 +29,7 @@ pub fn Landing() -> impl IntoView {
         <Meta property="og:title" content="CommitBee"/>
         <Meta property="og:description" content="The commit message generator that actually understands your code."/>
         <Meta property="og:type" content="website"/>
-        <Link rel="canonical" href="https://commitbee.dev/"/>
+        <Link rel="canonical" href="https://commitbee.buzz/"/>
 
         <main id="main-content">
             <HeroSection/>

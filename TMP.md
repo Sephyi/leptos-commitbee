@@ -45,7 +45,7 @@ SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 | 12 | Build | Low | `build.rs` ~30 `unwrap()`/`expect()` calls — acceptable for build script | Skipped | Claude | Build script panics are diagnostic; skipped per plan |
 | 13 | Build | Low | `prerender.rs` doesn't check HTTP status codes — 500 response written as-is | Done | Claude | http_get() parses status code, Err on non-200. Commit `87cb02c` |
 | 14 | Assets | Medium | No OG images (PRD PR-005 mentions WebP) | Deferred | Claude | Requires design assets |
-| 15 | Assets | Low | No CNAME file for custom domain (PRD DR-001) | Done | Claude | `public/CNAME` → `commitbee.dev`. Commit `3133ed5` |
+| 15 | Assets | Low | No CNAME file for custom domain (PRD DR-001) | Done | Claude | `public/CNAME` → `commitbee.buzz`. Commit `3133ed5` |
 | 16 | Assets | Low | No `apple-touch-icon` or `favicon.ico` | Partial | Claude | Placeholder 1×1 PNGs added to `public/images/`. `<link>` tags in `src/app.rs` deferred (off-limits worktree). Commit `3133ed5` |
 | 17 | Security | Medium | CSP allows `'unsafe-inline'` and `'unsafe-eval'` — weakens policy significantly | Done | Claude | `unsafe-eval` dropped; `unsafe-inline` retained for scripts (Leptos hydration) and styles (Tailwind v4) with documented justification. Commit `6d3de24` |
 | 18 | Testing | Medium | Only 3 content-validation tests — no Rust unit tests, component tests, or WASM tests | Done | Claude | 3→7 tests: order uniqueness, description length, delimiter-on-own-line, internal links. Commit `3ff7a0a` |
@@ -473,7 +473,7 @@ Or simpler: sort found paths by modification time and use the newest.
 
 Create `public/CNAME` with the content:
 ```
-commitbee.dev
+commitbee.buzz
 ```
 
 Prerender copies `public/` to `dist/`, so this deploys automatically.

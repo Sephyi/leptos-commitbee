@@ -19,7 +19,7 @@ use leptos_meta::*;
 pub fn Imprint() -> impl IntoView {
     view! {
         <Title text="Imprint - CommitBee"/>
-        <Meta name="description" content="Legal notice and imprint for commitbee.dev"/>
+        <Meta name="description" content="Legal notice and imprint for commitbee.buzz"/>
 
         <main class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
             <article class="prose max-w-none">
@@ -92,7 +92,7 @@ pub fn Imprint() -> impl IntoView {
 pub fn Privacy() -> impl IntoView {
     view! {
         <Title text="Privacy Policy - CommitBee"/>
-        <Meta name="description" content="Privacy policy and data protection notice for commitbee.dev"/>
+        <Meta name="description" content="Privacy policy and data protection notice for commitbee.buzz"/>
 
         <main class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
             <article class="prose max-w-none">

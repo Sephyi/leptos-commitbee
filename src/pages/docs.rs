@@ -24,7 +24,7 @@ pub fn DocsPage() -> impl IntoView {
                     <Meta name="description" content=page.description/>
                     <Meta property="og:title" content=format!("{} - CommitBee Docs", page.title)/>
                     <Meta property="og:description" content=page.description/>
-                    <Link rel="canonical" href=format!("https://commitbee.dev/docs/{}", current_slug)/>
+                    <Link rel="canonical" href=format!("https://commitbee.buzz/docs/{}", current_slug)/>
 
                     <div id="main-content" class="flex min-h-screen">
                         // Left sidebar (sticky, full-height)

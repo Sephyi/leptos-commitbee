@@ -130,7 +130,7 @@ fn main() {
     }
 
     // Generate robots.txt
-    let base_url = env_base_url().unwrap_or_else(|| "https://commitbee.dev".to_string());
+    let base_url = env_base_url().unwrap_or_else(|| "https://commitbee.buzz".to_string());
     let robots = format!("User-agent: *\nAllow: /\n\nSitemap: {base_url}/sitemap.xml\n");
     fs::write(dist_dir.join("robots.txt"), &robots).expect("Failed to write robots.txt");
     println!("    robots.txt -> dist/robots.txt");
