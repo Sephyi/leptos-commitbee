@@ -32,6 +32,7 @@ web-sys = { version = "0.3", features = [
     "DomTokenList",
     "HtmlElement",
     "HtmlInputElement",
+    "HtmlCanvasElement",
     "NodeList",
     "IntersectionObserver",
     "IntersectionObserverEntry",
@@ -42,6 +43,14 @@ web-sys = { version = "0.3", features = [
     "KeyboardEvent",
     "Response",
     "Headers",
+    "CanvasRenderingContext2d",
+    "WebGl2RenderingContext",
+    "WebGlShader",
+    "WebGlProgram",
+    "WebGlUniformLocation",
+    "WebGlBuffer",
+    "WebGlVertexArrayObject",
+    "DomRect",
 ] }
 console_error_panic_hook = { version = "0.1", optional = true }
 sublime_fuzzy = "0.7"
