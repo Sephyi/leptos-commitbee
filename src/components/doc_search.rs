@@ -12,6 +12,7 @@ pub fn DocSearch() -> impl IntoView {
     let (results, set_results) = signal::<Vec<SearchResult>>(vec![]);
     let (index, set_index) = signal::<Option<Vec<SearchEntry>>>(None);
     let (selected_index, set_selected_index) = signal::<Option<usize>>(None);
+    let (last_open, set_last_open) = signal(false);
 
     // Listen for Cmd+K / Ctrl+K and arrow key navigation
     Effect::new(move || {
@@ -61,6 +62,32 @@ pub fn DocSearch() -> impl IntoView {
                             let _ = window.location().set_href(&href);
                         }
                     }
+                    // Tab focus trap
+                    if key == "Tab" {
+                        if let Some(document) = web_sys::window().and_then(|w| w.document())
+                            && let Some(modal) = document.get_element_by_id("doc-search-modal")
+                        {
+                            let items = focusable_elements(&modal);
+                            if !items.is_empty() {
+                                if let Some(active) = document.active_element() {
+                                    let active_node = active.unchecked_ref::<web_sys::Node>();
+                                    if e.shift_key() {
+                                        if active_node.is_same_node(Some(
+                                            items[0].unchecked_ref::<web_sys::Node>(),
+                                        )) {
+                                            e.prevent_default();
+                                            let _ = items[items.len() - 1].focus();
+                                        }
+                                    } else if active_node.is_same_node(Some(
+                                        items[items.len() - 1].unchecked_ref::<web_sys::Node>(),
+                                    )) {
+                                        e.prevent_default();
+                                        let _ = items[0].focus();
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             });
         let window = web_sys::window().unwrap();
@@ -78,6 +105,21 @@ pub fn DocSearch() -> impl IntoView {
             let _ = body
                 .style()
                 .set_property("overflow", if open { "hidden" } else { "" });
+        }
+    });
+
+    // Restore focus to trigger button when modal closes
+    Effect::new(move || {
+        let open = is_open.get();
+        let last = last_open.get_untracked();
+        set_last_open.set(open);
+        if !open && last {
+            if let Some(document) = web_sys::window().and_then(|w| w.document())
+                && let Some(el) = document.get_element_by_id("doc-search-trigger")
+                && let Ok(btn) = el.dyn_into::<web_sys::HtmlElement>()
+            {
+                let _ = btn.focus();
+            }
         }
     });
 
@@ -118,8 +160,7 @@ pub fn DocSearch() -> impl IntoView {
                     let resp: web_sys::Response = resp.unchecked_into();
                     if resp.ok()
                         && let Ok(text_promise) = resp.text()
-                        && let Ok(json) =
-                            wasm_bindgen_futures::JsFuture::from(text_promise).await
+                        && let Ok(json) = wasm_bindgen_futures::JsFuture::from(text_promise).await
                         && let Some(text) = json.as_string()
                         && let Ok(entries) = serde_json::from_str::<Vec<SearchEntry>>(&text)
                     {
@@ -178,6 +219,7 @@ pub fn DocSearch() -> impl IntoView {
     view! {
         // Search trigger button
         <button
+            id="doc-search-trigger"
             on:click=move |_| set_is_open.set(true)
             class="hidden md:flex items-center gap-2 rounded-lg border border-honey/20 bg-surface px-3 py-1.5 text-sm text-comb hover:border-honey/40 transition-colors"
         >
@@ -195,6 +237,10 @@ pub fn DocSearch() -> impl IntoView {
                 on:click=move |_| set_is_open.set(false)
             >
                 <div
+                    id="doc-search-modal"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Search documentation"
                     class="w-full max-w-lg rounded-xl border border-honey/20 bg-surface shadow-2xl"
                     on:click=move |e| e.stop_propagation()
                 >
@@ -250,6 +296,19 @@ pub fn DocSearch() -> impl IntoView {
             </div>
         </Show>
     }
+}
+
+fn focusable_elements(container: &web_sys::Element) -> Vec<web_sys::HtmlElement> {
+    let selector =
+        "a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex='-1'])";
+    container
+        .query_selector_all(selector)
+        .map(|list| {
+            (0..list.length())
+                .filter_map(|i| list.item(i)?.dyn_into::<web_sys::HtmlElement>().ok())
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 #[derive(Clone, Debug, serde::Deserialize)]
