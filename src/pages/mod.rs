@@ -4,4 +4,5 @@
 
 pub mod docs;
 pub mod landing;
+pub mod legal;
 pub mod not_found;
