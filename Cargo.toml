@@ -18,7 +18,10 @@ leptos_axum = { version = "0.8", optional = true }
 axum = { version = "0.8", optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
 tower = { version = "0.5", optional = true }
-tower-http = { version = "0.6", features = ["fs", "compression-gzip"], optional = true }
+tower-http = { version = "0.6", features = [
+    "fs",
+    "compression-gzip",
+], optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 wasm-bindgen = "0.2"
@@ -57,7 +60,9 @@ sublime_fuzzy = "0.7"
 
 [build-dependencies]
 pulldown-cmark = { version = "0.13", features = ["html"] }
-syntect = { version = "5", default-features = false, features = ["default-fancy"] }
+syntect = { version = "5", default-features = false, features = [
+    "default-fancy",
+] }
 serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.9"
 serde_json = "1"
@@ -71,11 +76,7 @@ walkdir = "2"
 
 [features]
 default = []
-hydrate = [
-    "leptos/hydrate",
-    "leptos/islands",
-    "dep:console_error_panic_hook",
-]
+hydrate = ["leptos/hydrate", "leptos/islands", "dep:console_error_panic_hook"]
 ssr = [
     "leptos/ssr",
     "leptos/islands",
@@ -101,7 +102,14 @@ bin-features = ["ssr"]
 bin-default-features = false
 lib-features = ["hydrate"]
 lib-default-features = false
-hash-files = true
+# Disabled: hash-files produces per-build hashed filenames (e.g.
+# commitbee-web.<hash>.css) and bakes them into the SSR binary via compile-time
+# env vars. That works locally with `cargo leptos watch` but breaks the static
+# prerender + GitHub Pages deploy pipeline: the prerender step emits HTML with
+# unhashed filenames while the pkg/ directory contains hashed ones, so every
+# asset 404s. Deterministic filenames are fine for a static deploy — GitHub
+# Pages handles cache headers.
+hash-files = false
 
 [[bin]]
 name = "prerender"
