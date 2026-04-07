@@ -64,7 +64,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 //   style-src 'unsafe-inline': required — Tailwind v4 injects <style> elements at runtime.
                 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'"/>
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
-                <link rel="alternate icon" href="/images/favicon.svg"/>
+                <link rel="alternate icon" href="/images/favicon.ico" sizes="any"/>
+                <link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/>
                 <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="stylesheet" href=css_href/>
