@@ -328,12 +328,12 @@ fn InstallSection() -> impl IntoView {
                             <div class="space-y-2">
                                 <div class="relative group rounded-lg bg-pollen p-4 font-mono text-sm text-bark">
                                     <span class="text-comb">"$ "</span>"cargo install commitbee"
-                                    <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="cargo install commitbee">"Copy"</button>
+                                    <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="cargo install commitbee">"Copy"</button>
                                 </div>
                                 <div class="text-center text-xs text-comb">"or"</div>
                                 <div class="relative group rounded-lg bg-pollen p-4 font-mono text-sm text-bark">
                                     <span class="text-comb">"$ "</span>"brew install sephyi/tap/commitbee"
-                                    <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="brew install sephyi/tap/commitbee">"Copy"</button>
+                                    <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="brew install sephyi/tap/commitbee">"Copy"</button>
                                 </div>
                             </div>
                         </div>
@@ -344,7 +344,7 @@ fn InstallSection() -> impl IntoView {
                             <h3 class="text-sm font-semibold text-comb mb-3">"2. Pull a model"</h3>
                             <div class="relative group rounded-lg bg-pollen p-4 font-mono text-sm text-bark">
                                 <span class="text-comb">"$ "</span>"ollama pull qwen3.5:4b"
-                                <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="ollama pull qwen3.5:4b">"Copy"</button>
+                                <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="ollama pull qwen3.5:4b">"Copy"</button>
                             </div>
                         </div>
                     </crate::components::scroll_reveal::ScrollReveal>
@@ -355,7 +355,7 @@ fn InstallSection() -> impl IntoView {
                             <div class="relative group rounded-lg bg-pollen p-4 font-mono text-sm text-bark">
                                 <div><span class="text-comb">"$ "</span>"git add src/feature.rs"</div>
                                 <div><span class="text-comb">"$ "</span>"commitbee"</div>
-                                <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="git add src/feature.rs && commitbee">"Copy"</button>
+                                <button class="copy-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-xs text-comb hover:text-honey" data-code="git add src/feature.rs && commitbee">"Copy"</button>
                             </div>
                         </div>
                     </crate::components::scroll_reveal::ScrollReveal>
