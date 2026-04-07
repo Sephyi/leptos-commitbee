@@ -35,7 +35,8 @@ think = true
 
 ### "First line is X chars (max 72)"
 
-The LLM generated a subject line that's too long. CommitBee will retry up to 3 times with correction instructions. If it still fails, the error tells you exactly how long the line was. This is rare with the default model.
+The LLM generated a subject line that's too long. CommitBee will retry up to 3 times with correction instructions.  
+If it still fails, the error tells you exactly how long the line was. This is rare with the default model.
 
 ### "No staged changes found"
 

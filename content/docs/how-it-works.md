@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "How It Works"
-order: 2
+order: 3
 section: "Basics"
 description: "Understand commitbee's 7-stage pipeline from diff to commit message"
 ---
@@ -21,19 +21,44 @@ Stage Changes -> Git Service -> Tree-sitter -> Splitter -> Context Builder -> LL
 
 Here's what each step actually does:
 
-**1. Git Service** reads your staged changes using `gix` for repo discovery and the git CLI for diffs. Paths are parsed with NUL-delimited output (`-z` flag) so filenames with spaces or special characters work correctly.
+### 1. Git Service
+Reads your staged changes using `gix` for repo discovery and the `git` CLI for diffs. 
+- Paths are parsed with NUL-delimited output (`-z` flag) so filenames with spaces or special characters work correctly.
 
-**2. Tree-sitter Analyzer** parses both the staged version and the HEAD version of every changed file — in parallel, using `rayon` across CPU cores. It extracts **full signatures** (e.g., `pub fn connect(host: &str, timeout: Duration) -> Result<Connection>`) by taking the definition node text before the body child. Methods include their **parent scope** (enclosing impl, class, or trait — e.g., `CommitValidator::validate`). Modified symbols show old -> new signature diffs, with **structural AST diffs** that describe exactly what changed (parameters added/removed, return type changed, visibility changed, semantic markers like `unsafe`, `derive`, decorators, `export`, mutability, generic constraints, etc.). Cross-file connections are detected (caller+callee both changed). Symbols are tracked in three states: added, removed, or modified-signature, with a **doc-vs-code distinction** indicating whether changes were documentation-only, code-only, or mixed.
+### 2. Tree-sitter Analyzer
+Parses both the staged version and the HEAD version of every changed file — in parallel, using `rayon` across CPU cores. It extracts:
+- **Full signatures** (e.g., `pub fn connect(host: &str, timeout: Duration) -> Result<Connection>`) by taking the definition node text before the body child. 
+- **Parent scope** (enclosing impl, class, or trait — e.g., `CommitValidator::validate`). 
+- **Structural AST diffs** that describe exactly what changed in modified symbols (parameters added/removed, return type changed, visibility changed, semantic markers like `unsafe`, `derive`, decorators, `export`, mutability, generic constraints, etc.). 
+- **Cross-file connections** (caller+callee both changed). 
+- **Doc-vs-code distinction:** Symbols are tracked in three states (added, removed, or modified-signature) indicating whether changes were documentation-only, code-only, or mixed.
 
-**3. Commit Splitter** looks at your staged changes and decides whether they contain logically independent work. It uses diff-shape fingerprinting (what kind of changes — additions, deletions, modifications) combined with Jaccard similarity on content vocabulary to group files. If it finds multiple concerns, it offers to split them into separate commits.
+### 3. Commit Splitter
+Looks at your staged changes and decides whether they contain logically independent work. It groups files using:
+- **Diff-shape fingerprinting** (what kind of changes — additions, deletions, modifications).
+- **Jaccard similarity** on content vocabulary.
+If it finds multiple concerns, it offers to split them into separate commits.
 
-**4. Context Builder** assembles a budget-aware prompt. It classifies modified symbols as whitespace-only or semantic (via character-stream comparison), computes evidence flags (mechanical change? public APIs removed? bug-fix evidence?), detects **change intent** (error handling, test, logging, dependency update patterns) for the `INTENT:` prompt section, detects cross-file connections, identifies import changes and test file correlations, calculates the character budget for the subject line, and packs context within the token limit (~6K tokens). The token budget adapts: when structural AST diffs are available, symbols get 20% of the budget (diffs carry more detail); when only signatures are available, symbols get 30%.
+### 4. Context Builder
+Assembles a budget-aware prompt within the token limit (~6K tokens).
+- Classifies modified symbols as whitespace-only or semantic (via character-stream comparison).
+- Computes **evidence flags** (mechanical change? public APIs removed? bug-fix evidence?).
+- Detects **change intent** (error handling, test, logging, dependency update patterns) for the `INTENT:` prompt section.
+- Detects cross-file connections, identifies import changes and test file correlations.
+- Calculates the character budget for the subject line.
+- **Adapts token budget:** When structural AST diffs are available, symbols get 20% of the budget (diffs carry more detail); when only signatures are available, symbols get 30%.
 
-**5. LLM Provider** streams the prompt to your chosen model (Ollama, OpenAI, or Anthropic) and collects the response token by token.
+### 5. LLM Provider
+Streams the prompt to your chosen model (Ollama, OpenAI, or Anthropic) and collects the response token by token.
 
-**6. Validator** checks the LLM's output against the evidence flags. If the model says "fix" but there's no bug-fix evidence in the code, or if the subject is too long, or if it used generic wording — the validator catches it and retries with targeted correction instructions. Up to 3 attempts.
+### 6. Validator
+Checks the LLM's output against the evidence flags. If the model says "fix" but there's no bug-fix evidence in the code, or if the subject is too long, or if it used generic wording — the validator catches it and retries with targeted correction instructions. Up to 3 attempts.
 
-**7. Sanitizer** does the final cleanup: extracts JSON from potentially noisy LLM output (thinking blocks, code fences, conversational preambles), validates the conventional commit format, wraps the body at 72 characters, and constructs the final commit message string.
+### 7. Sanitizer
+Does the final cleanup: 
+- Extracts JSON from potentially noisy LLM output (thinking blocks, code fences, conversational preambles).
+- Validates the conventional commit format.
+- Wraps the body at 72 characters, and constructs the final commit message string.
 
 ## What Makes the Prompt Special
 

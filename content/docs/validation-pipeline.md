@@ -37,7 +37,8 @@ After the LLM responds, the **CommitValidator** checks the output against these 
 
 ## Stage 2: Multi-Pass Retry
 
-If any rules are violated, CommitBee appends a `CORRECTIONS` section to the prompt explaining what went wrong and re-prompts the LLM. It then **re-validates** the retry output. If violations persist, it retries again — up to 3 total attempts.
+If any rules are violated, CommitBee appends a `CORRECTIONS` section to the prompt explaining what went wrong and re-prompts the LLM.  
+It then **re-validates** the retry output. If violations persist, it retries again — up to 3 total attempts.
 
 This is more sophisticated than a simple retry. Each attempt gets the full list of remaining violations, so the LLM can address them all at once.
 

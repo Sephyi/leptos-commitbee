@@ -13,11 +13,19 @@ description: "Install commitbee and generate your first commit message"
 
 ## Install
 
+**Stable Release**
 ```bash
 cargo install commitbee
 ```
 
-Or build from source:
+**Development Version**
+
+If you want access to the latest features weeks early (warning: can be unstable, no guarantees):
+```bash
+cargo install --git https://github.com/Sephyi/commitbee --branch development commitbee
+```
+
+**Or build it yourself from source:**
 
 ```bash
 git clone https://github.com/sephyi/commitbee.git
@@ -29,22 +37,30 @@ cargo build --release
 ## Requirements
 
 - **Rust 1.94+** (edition 2024)
-- **Ollama** running locally — [ollama.ai](https://ollama.ai)
-- A model pulled: `ollama pull qwen3.5:4b`
+- **An LLM Provider**:
+  - **Local (Default):** [Ollama](https://ollama.ai) running locally with a model pulled (e.g., `ollama pull qwen3.5:4b`).
+  - **Cloud:** An API key for Anthropic or OpenAI (see [LLM Providers](llm-providers)).
+
+> More providers will be added natively in the future. For now, you can hook into almost any other LLM (like Gemini, Mistral, or custom  
+> endpoints) by using the `openai` provider and setting the `openai_base_url` in your config to point to an OpenAI-compatible proxy.
 
 ## First Run
 
+The most important concept in CommitBee is that **you must always stage your files first**. CommitBee only looks at your staging area,  
+giving you complete control over which files are included or ignored in the generated commit message.
+
 ```bash
-# Stage something
+# Explicitly stage the files you want
 git add src/my_change.rs
 
-# Generate a commit message
+# Generate a commit message from staged context
 commitbee
 ```
 
 That's it. Zero configuration needed if Ollama is running with `qwen3.5:4b`.
 
-CommitBee will analyze your staged changes, extract semantic information via tree-sitter, send a structured prompt to the LLM, validate the output, and present you with a commit message to approve.
+CommitBee will analyze your staged changes, extract semantic information via tree-sitter, send a structured prompt to the LLM, validate  
+the output, and present you with a commit message to approve.
 
 ## Quick Config
 
@@ -55,3 +71,7 @@ commitbee init
 ```
 
 This creates a config at your platform's standard location (run `commitbee doctor` to see where). Edit it to change the model, provider, or formatting preferences.
+
+---
+
+**🔥 Next Step:** Ready to level up? Check out the [Recommended Setup](recommended-setup) guide for the official configuration we use for the highest quality commit messages.

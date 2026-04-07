@@ -41,11 +41,13 @@ Whenever you run CommitBee in a headless CI environment, you must use the `--yes
 commitbee --yes --dry-run
 ```
 
-By default, CommitBee runs the **Validation Pipeline** against the LLM's generated strings, ensuring no bad commits land on your main branches. For CI checks without generating anything new, use `commitbee check`.
+By default, CommitBee runs the **Validation Pipeline** against the LLM's generated strings, ensuring no bad commits land on your main branches.  
+For CI checks without generating anything new, use `commitbee check`.
 
 ## Securing your APIs
 
-When integrating cloud LLM providers (e.g., OpenAI or Anthropic), define and pass the necessary environment variables explicitly to your jobs. **Important**: Only expose API keys in private repositories or as encrypted Repository Secrets:
+When integrating cloud LLM providers (e.g., OpenAI or Anthropic), define and pass the necessary environment variables explicitly to your jobs.  
+**Important**: Only expose API keys in private repositories or as encrypted Repository Secrets:
 
 ```yaml
 env:

@@ -38,7 +38,8 @@ cargo install commitbee --no-default-features --features lang-rust,lang-typescri
 cargo install commitbee --no-default-features --features lang-rust,lang-typescript,lang-javascript,lang-python,lang-go,lang-java,lang-c,lang-ruby
 ```
 
-**Files in unsupported or disabled languages still work** — they're included in the diff context, they just don't get semantic symbol extraction. The commit message will still be based on the actual diff content; it just won't know which specific functions or types changed.
+**Files in unsupported or disabled languages still work** — they're included in the diff context, they just don't get semantic symbol extraction.  
+The commit message will still be based on the actual diff content; it just won't know which specific functions or types changed.
 
 ## Symbol Tracking
 
@@ -48,6 +49,8 @@ For supported languages, symbols are tracked in three states:
 - **Removed** `[-]` — Deleted symbol
 - **Modified (signature changed)** `[~]` — Symbol exists in both versions but its signature changed
 
-Modified symbols include additional annotations: `[docs only]` when only documentation/comments changed, `[docs + code]` when both documentation and code changed. Methods show their parent scope (e.g., `CommitValidator::validate` rather than just `validate`).
+Modified symbols include additional annotations: `[docs only]` when only documentation/comments changed, `[docs + code]` when both documentation and code changed.  
+Methods show their parent scope (e.g., `CommitValidator::validate` rather than just `validate`).
 
-This information appears in the prompt as a `SYMBOLS CHANGED` section. When structural AST diffs are available, a separate `STRUCTURED CHANGES` section provides precise details like `+param timeout`, `return Result<()> -> Result<Error>`, or `+field name`.
+This information appears in the prompt as a `SYMBOLS CHANGED` section. When structural AST diffs are available, a separate `STRUCTURED CHANGES` section provides  
+precise details like `+param timeout`, `return Result<()> -> Result<Error>`, or `+field name`.

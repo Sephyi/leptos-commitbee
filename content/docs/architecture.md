@@ -47,17 +47,24 @@ src/
 
 ## Key Design Decisions
 
-**Hybrid Git** — `gix` (pure Rust) is used for fast repo discovery, but the git CLI is used for diffs and staging operations. This avoids the complexity of reimplementing diff parsing in pure Rust while keeping startup fast.
+**Hybrid Git** — `gix` (pure Rust) is used for fast repo discovery, but the git CLI is used for diffs and staging operations.  
+This avoids the complexity of reimplementing diff parsing in pure Rust while keeping startup fast.
 
-**Full File Parsing** — Tree-sitter parses the complete staged and HEAD versions of files, not just the diff hunks. Diff hunks are then mapped to symbol spans. This means CommitBee knows the full context of what changed, not just the changed lines.
+**Full File Parsing** — Tree-sitter parses the complete staged and HEAD versions of files, not just the diff hunks.  
+Diff hunks are then mapped to symbol spans. This means CommitBee knows the full context of what changed, not just the changed lines.
 
-**Enum Dispatch** — The LLM provider uses an enum (`LlmBackend`) rather than a trait object. This avoids `async-trait` overhead and the complexity of `dyn` dispatch for async methods.
+**Enum Dispatch** — The LLM provider uses an enum (`LlmBackend`) rather than a trait object.  
+This avoids `async-trait` overhead and the complexity of `dyn` dispatch for async methods.
 
-**Streaming with Cancellation** — All providers support Ctrl+C cancellation via `tokio_util::CancellationToken`. The streaming display runs in a separate tokio task with `tokio::select!` for responsive cancellation.
+**Streaming with Cancellation** — All providers support Ctrl+C cancellation via `tokio_util::CancellationToken`.  
+The streaming display runs in a separate tokio task with `tokio::select!` for responsive cancellation.
 
-**Token Budget** — The context builder tracks character usage (~4 chars per token) and truncates the diff if it exceeds the budget, prioritizing the most important files. The budget adapts based on available information: when structural AST diffs are present, the symbol allocation shrinks (20%) since the diffs carry precise detail; when only signatures are available, symbols get 30%. The default 24K char budget (~6K tokens) is safe for 8K context models.
+**Token Budget** — The context builder tracks character usage (~4 chars per token) and truncates the diff if it exceeds the budget, prioritizing the most important files.  
+The budget adapts based on available information: when structural AST diffs are present, the symbol allocation shrinks (20%) since the diffs carry precise detail; when only  
+signatures are available, symbols get 30%. The default 24K char budget (~6K tokens) is safe for 8K context models.
 
-**Single Source of Truth for Types** — `CommitType::ALL` is a const array that defines all valid commit types. The system prompt's type list is verified at compile time (via a `#[test]`) to match this array exactly.
+**Single Source of Truth for Types** — `CommitType::ALL` is a const array that defines all valid commit types.  
+The system prompt's type list is verified at compile time (via a `#[test]`) to match this array exactly.
 
 ## Error Philosophy
 

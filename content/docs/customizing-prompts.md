@@ -11,7 +11,8 @@ description: "How to customize CommitBee's behavior and commit message format"
 
 # Customizing Prompts
 
-CommitBee generates messages according to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification by default. However, you can tailor its behavior to match your team's specific conventions.
+CommitBee generates messages according to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification by default.  
+However, you can tailor its behavior to match your team's specific conventions.
 
 ## Global Configuration
 

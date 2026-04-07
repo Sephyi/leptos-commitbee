@@ -17,11 +17,14 @@ One of CommitBee's standout features. When your staged changes contain logically
 
 The splitter doesn't just look at directory structure. It uses two signals:
 
-**Diff-shape fingerprinting** — Each file gets a "shape" based on its change pattern (ratio of additions to deletions, whether it's a new file, etc.). Files with similar shapes are more likely related.
+**Diff-shape fingerprinting** — Each file gets a "shape" based on its change pattern (ratio of additions to deletions, whether it's a new file, etc.).  
+Files with similar shapes are more likely related.
 
-**Jaccard similarity on content vocabulary** — The actual words in the diff are compared. If two files share similar vocabulary (same variable names, function names, imports), they're probably part of the same logical change.
+**Jaccard similarity on content vocabulary** — The actual words in the diff are compared. If two files share similar vocabulary (same variable names,  
+function names, imports), they're probably part of the same logical change.
 
-Files are then grouped by combining these signals with category separation (tests stay with their source files, docs are separated from code, config files are grouped together).
+Files are then grouped by combining these signals with category separation (tests stay with their source files, docs are separated from code,  
+config files are grouped together).
 
 ## Example
 

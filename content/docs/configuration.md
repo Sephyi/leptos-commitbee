@@ -17,7 +17,7 @@ CommitBee uses platform-standard config directories:
 
 | Platform | Path |
 | --- | --- |
-| macOS | `~/Library/Application Support/commitbee/config.toml` |
+| macOS | `~/Library/Application\ Support/commitbee/config.toml` |
 | Linux | `~/.config/commitbee/config.toml` |
 | Windows | `%APPDATA%\commitbee\config\config.toml` |
 
@@ -36,8 +36,9 @@ model = "qwen3.5:4b"
 ollama_host = "http://localhost:11434"
 
 # API key for cloud providers (OpenAI, Anthropic)
-# Better: use COMMITBEE_API_KEY env var or `commitbee set-key`
-# api_key = "sk-..."
+# [!CAUTION] Setting this in the config file or via environment variables is highly insecure!
+# Use `commitbee config set-key <provider>` to store it securely in your OS keychain instead.
+api_key = "sk-..."
 
 # Maximum lines of diff to include in prompt (10-10000)
 max_diff_lines = 500
@@ -110,7 +111,15 @@ This means you can set global preferences in your config file and override per-p
 | `COMMITBEE_PROVIDER` | LLM provider (`ollama`, `openai`, `anthropic`) |
 | `COMMITBEE_MODEL` | Model name |
 | `COMMITBEE_OLLAMA_HOST` | Ollama server URL |
-| `COMMITBEE_API_KEY` | API key for cloud providers |
+| `COMMITBEE_API_KEY` | API key for cloud providers (**Caution:** Highly insecure! Use `set-key` instead) |
 | `COMMITBEE_LOG` | Log level filter (e.g., `debug`, `commitbee=debug`) |
 
 Nested config keys use `__` as separator: `COMMITBEE_FORMAT__INCLUDE_BODY=false`.
+
+## Project Config (.commitbee.toml)
+
+In addition to your platform's global configs, you can place a `.commitbee.toml` at the top level of your git repository. This is highly recommended for teams  
+as it allows you to sync and enforce `[limits]` and custom `[conventions]` directly into your codebase.
+
+**Security Constraints**: To prevent malicious repositories from hijacking your local setup, the `.commitbee.toml` project-level configuration **will ignore**  
+any `api_key` settings or cloud provider `base_url` redirection parameters. These sensitive security values must be configured via your global setup or `set-key`.
