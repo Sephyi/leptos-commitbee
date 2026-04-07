@@ -8,17 +8,17 @@ use leptos::prelude::*;
 pub fn ComparisonSection() -> impl IntoView {
     view! {
         <section class="py-24 bg-surface/55 backdrop-blur-md">
-            <div class="mx-auto max-w-5xl px-4">
+            <div class="max-w-5xl px-4 mx-auto">
                 <crate::components::scroll_reveal::ScrollReveal>
                     <h2 class="text-3xl font-bold text-center text-bark sm:text-4xl">
                         "CommitBee vs. the field"
                     </h2>
                 </crate::components::scroll_reveal::ScrollReveal>
 
-                <div class="mt-12 relative">
+                <div class="relative mt-12">
                     <crate::components::scroll_reveal::ScrollReveal class="reveal-scale">
-                        <div class="rounded-xl border border-comb/10 bg-surface-raised p-6 ml-4 mr-0 sm:ml-8 sm:mr-0">
-                            <h3 class="text-sm font-semibold text-comb mb-4">"Other commit generators"</h3>
+                        <div class="p-6 ml-4 mr-0 border rounded-xl border-comb/10 bg-surface-raised sm:ml-8 sm:mr-0">
+                            <h3 class="mb-4 text-sm font-semibold text-comb">"Other commit generators"</h3>
                             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                                 <ComparisonFeature label="Local LLM" has=true/>
                                 <ComparisonFeature label="Cloud providers" has=true/>
@@ -35,7 +35,7 @@ pub fn ComparisonSection() -> impl IntoView {
                     </crate::components::scroll_reveal::ScrollReveal>
 
                     <crate::components::scroll_reveal::ScrollReveal class="reveal-scale">
-                        <div class="-mt-8 relative z-10 rounded-xl border-2 border-honey/30 bg-surface p-6 shadow-xl shadow-honey/10 mr-4 ml-0 sm:mr-8 sm:ml-0">
+                        <div class="relative z-10 p-6 ml-0 mr-4 -mt-8 border-2 shadow-xl rounded-xl border-honey/30 bg-surface shadow-honey/10 sm:mr-8 sm:ml-0">
                             <div class="flex items-center gap-2 mb-4">
                                 <span class="text-xl">"🐝"</span>
                                 <h3 class="text-sm font-semibold text-honey">"CommitBee"</h3>
@@ -68,7 +68,7 @@ fn ComparisonFeature(label: &'static str, has: bool) -> impl IntoView {
             if has { "bg-honey/5 text-bark" } else { "bg-surface-raised text-comb/50" }
         )>
             {if has {
-                view! { <span class="text-honey font-medium">"✓"</span> }.into_any()
+                view! { <span class="font-medium text-honey">"✓"</span> }.into_any()
             } else {
                 view! { <span class="text-comb/30">"—"</span> }.into_any()
             }}

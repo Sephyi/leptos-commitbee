@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
-use pulldown_cmark::{html, Event, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
 use std::fmt::Write as FmtWrite;
 use std::fs;

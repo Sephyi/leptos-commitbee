@@ -16,8 +16,8 @@
 //! This is an `#[island]` so it only hydrates on the landing page.
 
 use leptos::prelude::*;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
 use web_sys::{HtmlCanvasElement, WebGl2RenderingContext as GL, WebGlProgram, WebGlShader};
 
 const VERTEX_SHADER: &str = r#"#version 300 es
@@ -265,8 +265,8 @@ pub fn BgShader() -> impl IntoView {
                 let resize = resize.clone();
                 Closure::<dyn FnMut()>::once(move || resize())
             };
-            let _ = window
-                .request_animation_frame(once.as_ref().unchecked_ref::<js_sys::Function>());
+            let _ =
+                window.request_animation_frame(once.as_ref().unchecked_ref::<js_sys::Function>());
             once.forget();
         }
 
@@ -336,16 +336,15 @@ pub fn BgShader() -> impl IntoView {
             render_gl.draw_arrays(GL::TRIANGLES, 0, 3);
 
             if let Some(cb) = f.borrow().as_ref() {
-                let _ = window
-                    .request_animation_frame(cb.as_ref().unchecked_ref::<js_sys::Function>());
+                let _ =
+                    window.request_animation_frame(cb.as_ref().unchecked_ref::<js_sys::Function>());
             }
         }));
 
         if let Some(window) = web_sys::window()
             && let Some(cb) = g.borrow().as_ref()
         {
-            let _ = window
-                .request_animation_frame(cb.as_ref().unchecked_ref::<js_sys::Function>());
+            let _ = window.request_animation_frame(cb.as_ref().unchecked_ref::<js_sys::Function>());
         }
     });
 

@@ -21,7 +21,7 @@ pub fn Imprint() -> impl IntoView {
         <Title text="Imprint - CommitBee"/>
         <Meta name="description" content="Legal notice and imprint for commitbee.buzz"/>
 
-        <main class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+        <main class="max-w-3xl px-4 py-16 mx-auto sm:px-6 lg:px-8">
             <article class="prose max-w-none">
                 <h1>"Imprint / Impressum"</h1>
 
@@ -81,7 +81,7 @@ pub fn Imprint() -> impl IntoView {
                 </p>
 
                 <p class="mt-12 text-sm text-comb">
-                    <a href="/" class="hover:text-honey transition-colors">"← Back to home"</a>
+                    <a href="/" class="transition-colors hover:text-honey">"← Back to home"</a>
                 </p>
             </article>
         </main>
@@ -94,7 +94,7 @@ pub fn Privacy() -> impl IntoView {
         <Title text="Privacy Policy - CommitBee"/>
         <Meta name="description" content="Privacy policy and data protection notice for commitbee.buzz"/>
 
-        <main class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+        <main class="max-w-3xl px-4 py-16 mx-auto sm:px-6 lg:px-8">
             <article class="prose max-w-none">
                 <h1>"Privacy Policy / Datenschutzerklärung"</h1>
 
@@ -193,7 +193,7 @@ pub fn Privacy() -> impl IntoView {
                 </p>
 
                 <p class="mt-4 text-sm text-comb">
-                    <a href="/" class="hover:text-honey transition-colors">"← Back to home"</a>
+                    <a href="/" class="transition-colors hover:text-honey">"← Back to home"</a>
                 </p>
             </article>
         </main>

@@ -38,11 +38,11 @@ pub fn DocsPage() -> impl IntoView {
                         <main class="flex-1 min-w-0 px-6 py-8 lg:px-10 bg-surface/65 backdrop-blur-md">
                             // Breadcrumbs
                             <nav class="mb-6 text-sm text-comb" aria-label="Breadcrumb">
-                                <a href="/docs/getting-started" class="hover:text-honey transition-colors">"Docs"</a>
+                                <a href="/docs/getting-started" class="transition-colors hover:text-honey">"Docs"</a>
                                 " / "
                                 <span class="text-comb">{page.section}</span>
                                 " / "
-                                <span class="text-bark font-medium">{page.title}</span>
+                                <span class="font-medium text-bark">{page.title}</span>
                             </nav>
 
                             // Rendered markdown content
@@ -54,20 +54,20 @@ pub fn DocsPage() -> impl IntoView {
                             <crate::components::code_block::CodeBlockActivator/>
 
                             // Prev/next navigation
-                            <nav class="mt-12 flex justify-between border-t border-honey/10 pt-6">
+                            <nav class="flex justify-between pt-6 mt-12 border-t border-honey/10">
                                 {prev.map(|p| view! {
                                     <a href=format!("/docs/{}", p.slug) class="group">
                                         <span class="text-xs text-comb">"Previous"</span>
-                                        <div class="text-sm font-medium text-bark group-hover:text-honey transition-colors">
+                                        <div class="text-sm font-medium transition-colors text-bark group-hover:text-honey">
                                             "← " {p.title}
                                         </div>
                                     </a>
                                 })}
                                 <div/>
                                 {next.map(|p| view! {
-                                    <a href=format!("/docs/{}", p.slug) class="group text-right">
+                                    <a href=format!("/docs/{}", p.slug) class="text-right group">
                                         <span class="text-xs text-comb">"Next"</span>
-                                        <div class="text-sm font-medium text-bark group-hover:text-honey transition-colors">
+                                        <div class="text-sm font-medium transition-colors text-bark group-hover:text-honey">
                                             {p.title} " →"
                                         </div>
                                     </a>
@@ -88,7 +88,7 @@ pub fn DocsPage() -> impl IntoView {
                         <div class="text-center">
                             <h1 class="text-4xl font-bold text-bark">"404"</h1>
                             <p class="mt-2 text-comb">"Documentation page not found."</p>
-                            <a href="/docs/getting-started" class="mt-4 inline-block text-honey hover:underline">
+                            <a href="/docs/getting-started" class="inline-block mt-4 text-honey hover:underline">
                                 "Go to Getting Started"
                             </a>
                         </div>

@@ -11,14 +11,14 @@ pub fn NotFound() -> impl IntoView {
         <Title text="404 - CommitBee"/>
         <div class="flex items-center justify-center min-h-screen">
             <div class="text-center">
-                <div class="text-6xl mb-4">"🐝"</div>
+                <div class="mb-4 text-6xl">"🐝"</div>
                 <h1 class="text-5xl font-bold text-bark">"404"</h1>
                 <p class="mt-4 text-lg text-comb">"This page buzzed off somewhere."</p>
-                <div class="mt-8 flex items-center justify-center gap-4">
-                    <a href="/" class="rounded-lg bg-honey px-6 py-3 text-sm font-semibold text-white hover:bg-honey-dark transition-colors">
+                <div class="flex items-center justify-center gap-4 mt-8">
+                    <a href="/" class="px-6 py-3 text-sm font-semibold text-white transition-colors rounded-lg bg-honey hover:bg-honey-dark">
                         "Go Home"
                     </a>
-                    <a href="/docs/getting-started" class="rounded-lg border border-honey/30 px-6 py-3 text-sm font-semibold text-bark hover:bg-honey/5 transition-colors">
+                    <a href="/docs/getting-started" class="px-6 py-3 text-sm font-semibold transition-colors border rounded-lg border-honey/30 text-bark hover:bg-honey/5">
                         "Read Docs"
                     </a>
                 </div>

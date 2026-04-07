@@ -112,7 +112,7 @@ pub fn MobileMenu() -> impl IntoView {
                 e.stop_propagation();
                 set_is_open.update(|v| *v = !*v);
             }
-            class="md:hidden p-2 text-comb hover:text-bark transition-colors"
+            class="p-2 transition-colors md:hidden text-comb hover:text-bark"
             aria-label="Open menu"
             aria-haspopup="dialog"
             aria-controls="mobile-menu-panel"
@@ -145,14 +145,14 @@ pub fn MobileMenu() -> impl IntoView {
                     aria-modal="true"
                     aria-label="Navigation menu"
                     tabindex="-1"
-                    class="absolute right-0 top-0 h-full w-72 bg-surface border-l border-honey/10 shadow-2xl p-6 flex flex-col gap-6 animate-slide-in-right"
+                    class="absolute top-0 right-0 flex flex-col h-full gap-6 p-6 border-l shadow-2xl w-72 bg-surface border-honey/10 animate-slide-in-right"
                 >
                     // Close button
                     <div class="flex justify-end">
                         <button
                             type="button"
                             on:click=move |_| set_is_open.set(false)
-                            class="p-2 text-comb hover:text-bark transition-colors"
+                            class="p-2 transition-colors text-comb hover:text-bark"
                             aria-label="Close menu"
                         >
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,14 +165,14 @@ pub fn MobileMenu() -> impl IntoView {
                     <nav class="flex flex-col gap-4">
                         <a
                             href="/"
-                            class="text-lg font-medium text-bark hover:text-honey transition-colors"
+                            class="text-lg font-medium transition-colors text-bark hover:text-honey"
                             on:click=move |_| set_is_open.set(false)
                         >
                             "Home"
                         </a>
                         <a
                             href="/docs/getting-started"
-                            class="text-lg font-medium text-bark hover:text-honey transition-colors"
+                            class="text-lg font-medium transition-colors text-bark hover:text-honey"
                             on:click=move |_| set_is_open.set(false)
                         >
                             "Docs"
@@ -181,7 +181,7 @@ pub fn MobileMenu() -> impl IntoView {
                             href="https://github.com/sephyi/commitbee"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-lg font-medium text-comb hover:text-honey transition-colors"
+                            class="text-lg font-medium transition-colors text-comb hover:text-honey"
                             on:click=move |_| set_is_open.set(false)
                         >
                             "GitHub"
@@ -190,7 +190,7 @@ pub fn MobileMenu() -> impl IntoView {
                             href="https://crates.io/crates/commitbee"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-lg font-medium text-comb hover:text-honey transition-colors"
+                            class="text-lg font-medium transition-colors text-comb hover:text-honey"
                             on:click=move |_| set_is_open.set(false)
                         >
                             "crates.io"

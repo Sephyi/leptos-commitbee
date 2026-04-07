@@ -101,7 +101,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <HydrationScripts options islands=true/>
                 <MetaTags/>
             </head>
-            <body class="antialiased bg-surface text-bark relative">
+            <body class="relative antialiased bg-surface text-bark">
                 <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-honey focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg">"Skip to content"</a>
                 <App/>
                 // Inline scroll-reveal observer: runs before WASM, no hydration dependency

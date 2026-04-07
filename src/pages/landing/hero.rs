@@ -7,9 +7,9 @@ use leptos::prelude::*;
 #[component]
 pub fn HeroSection() -> impl IntoView {
     view! {
-        <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section class="relative flex items-center justify-center min-h-screen overflow-hidden">
 
-            <div class="relative mx-auto max-w-4xl px-4 text-center">
+            <div class="relative max-w-4xl px-4 mx-auto text-center">
                 <crate::components::scroll_reveal::ScrollReveal class="reveal">
                     <h1 class="text-4xl font-bold tracking-tight text-bark sm:text-6xl lg:text-7xl">
                         "The commit message generator that "
@@ -19,22 +19,22 @@ pub fn HeroSection() -> impl IntoView {
                 </crate::components::scroll_reveal::ScrollReveal>
 
                 <crate::components::scroll_reveal::ScrollReveal class="reveal">
-                    <p class="mt-6 text-lg text-comb sm:text-xl max-w-2xl mx-auto">
+                    <p class="max-w-2xl mx-auto mt-6 text-lg text-comb sm:text-xl">
                         "CommitBee parses your code with tree-sitter, maps diff hunks to symbol spans, and gives the LLM structured semantic context."
                     </p>
                 </crate::components::scroll_reveal::ScrollReveal>
 
                 <crate::components::scroll_reveal::ScrollReveal class="reveal">
-                    <div class="mt-10 flex items-center justify-center gap-4">
+                    <div class="flex items-center justify-center gap-4 mt-10">
                         <a
                             href="#install"
-                            class="rounded-lg bg-honey px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-honey/25 hover:bg-honey-dark transition-colors"
+                            class="px-6 py-3 text-sm font-semibold text-white transition-colors rounded-lg shadow-lg bg-honey shadow-honey/25 hover:bg-honey-dark"
                         >
                             "Get Started"
                         </a>
                         <a
                             href="#pipeline"
-                            class="rounded-lg border border-honey/30 px-6 py-3 text-sm font-semibold text-bark hover:bg-honey/5 transition-colors"
+                            class="px-6 py-3 text-sm font-semibold transition-colors border rounded-lg border-honey/30 text-bark hover:bg-honey/5"
                         >
                             "See How It Works"
                         </a>
@@ -43,14 +43,14 @@ pub fn HeroSection() -> impl IntoView {
 
                 // Terminal mockup
                 <crate::components::scroll_reveal::ScrollReveal class="reveal-scale">
-                    <div class="mt-16 mx-auto max-w-2xl rounded-xl border border-honey/20 bg-surface-raised shadow-2xl shadow-honey/5 overflow-hidden">
-                        <div class="flex items-center gap-2 px-4 py-3 bg-pollen/50 border-b border-honey/10">
+                    <div class="max-w-2xl mx-auto mt-16 overflow-hidden border shadow-2xl rounded-xl border-honey/20 bg-surface-raised shadow-honey/5">
+                        <div class="flex items-center gap-2 px-4 py-3 border-b bg-pollen/50 border-honey/10">
                             <div class="w-3 h-3 rounded-full bg-red-400/60"/>
                             <div class="w-3 h-3 rounded-full bg-yellow-400/60"/>
                             <div class="w-3 h-3 rounded-full bg-green-400/60"/>
                             <span class="ml-2 text-xs text-comb">"~/project"</span>
                         </div>
-                        <div class="p-4 font-mono text-sm text-bark text-left">
+                        <div class="p-4 font-mono text-sm text-left text-bark">
                             <div class="text-comb">"$ commitbee"</div>
                             <div class="mt-2 text-comb">"Analyzing 3 staged files..."</div>
                             <div class="text-comb">"Extracting symbols (tree-sitter)..."</div>

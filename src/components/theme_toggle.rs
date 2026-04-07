@@ -48,7 +48,7 @@ pub fn ThemeToggle() -> impl IntoView {
     view! {
         <button
             on:click=toggle
-            class="p-2 rounded-lg text-comb hover:text-bark hover:bg-surface-raised transition-colors"
+            class="p-2 transition-colors rounded-lg text-comb hover:text-bark hover:bg-surface-raised"
             aria-label="Toggle dark mode"
         >
             {move || if is_dark.get() {

@@ -257,30 +257,30 @@ pub fn DocSearch() -> impl IntoView {
                     role="dialog"
                     aria-modal="true"
                     aria-label="Search documentation"
-                    class="w-full max-w-lg rounded-xl border border-honey/20 bg-surface shadow-2xl"
+                    class="w-full max-w-lg border shadow-2xl rounded-xl border-honey/20 bg-surface"
                     on:click=move |e| e.stop_propagation()
                 >
                     // Search input
-                    <div class="flex items-center border-b border-honey/10 px-4">
+                    <div class="flex items-center px-4 border-b border-honey/10">
                         <svg class="w-5 h-5 text-comb" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         <input
                             type="text"
                             placeholder="Search documentation..."
-                            class="flex-1 bg-transparent px-3 py-4 text-bark placeholder:text-comb/50 outline-hidden"
+                            class="flex-1 px-3 py-4 bg-transparent text-bark placeholder:text-comb/50 outline-hidden"
                             autofocus=true
                             on:input=move |e| set_query.set(event_target_value(&e))
                         />
-                        <kbd class="rounded bg-surface-raised px-2 py-1 text-xs text-comb">"esc"</kbd>
+                        <kbd class="px-2 py-1 text-xs rounded bg-surface-raised text-comb">"esc"</kbd>
                     </div>
 
                     // Results
-                    <div class="max-h-80 overflow-y-auto p-2">
+                    <div class="p-2 overflow-y-auto max-h-80">
                         {move || {
                             let r = results.get();
                             if r.is_empty() && !query.get().is_empty() {
-                                view! { <p class="p-4 text-sm text-comb text-center">"No results found"</p> }.into_any()
+                                view! { <p class="p-4 text-sm text-center text-comb">"No results found"</p> }.into_any()
                             } else {
                                 r.into_iter()
                                     .enumerate()
@@ -323,7 +323,7 @@ pub fn MobileSearchButton() -> impl IntoView {
     view! {
         <button
             type="button"
-            class="md:hidden p-2 text-comb hover:text-bark transition-colors"
+            class="p-2 transition-colors md:hidden text-comb hover:text-bark"
             aria-label="Search documentation"
             on:click=move |_| {
                 if let Some(window) = web_sys::window()

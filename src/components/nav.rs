@@ -7,16 +7,16 @@ use leptos::prelude::*;
 #[component]
 pub fn Nav() -> impl IntoView {
     view! {
-        <nav id="site-nav" class="sticky top-0 z-50 w-full border-b border-transparent bg-transparent transition-all duration-300 scrolled:border-honey/10 scrolled:bg-surface/80 scrolled:backdrop-blur-lg">
-            <div class="relative flex h-16 w-full items-center justify-between px-4">
+        <nav id="site-nav" class="sticky top-0 z-50 w-full transition-all duration-300 bg-transparent border-b border-transparent scrolled:border-honey/10 scrolled:bg-surface/80 scrolled:backdrop-blur-lg">
+            <div class="relative flex items-center justify-between w-full h-16 px-4">
                 // Left: Logo
-                <a href="/" class="relative z-10 flex items-center gap-2 font-bold text-lg text-bark hover:text-honey transition-colors">
+                <a href="/" class="relative z-10 flex items-center gap-2 text-lg font-bold transition-colors text-bark hover:text-honey">
                     <span class="text-2xl">"🐝"</span>
                     <span>"CommitBee"</span>
                 </a>
 
                 // Center: Search (desktop) — absolutely centered, independent of side widths
-                <div class="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 justify-center md:flex">
+                <div class="absolute inset-x-0 justify-center hidden -translate-y-1/2 pointer-events-none top-1/2 md:flex">
                     <div class="pointer-events-auto w-[26rem]">
                         <super::doc_search::DocSearch/>
                     </div>
@@ -27,14 +27,14 @@ pub fn Nav() -> impl IntoView {
                 // visible right edge aligns exactly with the px-4 nav boundary
                 // (which in turn matches the TOC content right edge).
                 <div class="relative z-10 flex items-center -mr-2">
-                    <div class="hidden md:flex items-center gap-5">
-                        <a href="/" class="text-sm font-medium text-comb hover:text-bark transition-colors">"Home"</a>
-                        <a href="/docs/getting-started" class="text-sm font-medium text-comb hover:text-bark transition-colors">"Docs"</a>
+                    <div class="items-center hidden gap-5 md:flex">
+                        <a href="/" class="text-sm font-medium transition-colors text-comb hover:text-bark">"Home"</a>
+                        <a href="/docs/getting-started" class="text-sm font-medium transition-colors text-comb hover:text-bark">"Docs"</a>
                         <a
                             href="https://github.com/sephyi/commitbee"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-sm font-medium text-comb hover:text-bark transition-colors"
+                            class="text-sm font-medium transition-colors text-comb hover:text-bark"
                         >
                             "GitHub"
                         </a>
@@ -42,7 +42,7 @@ pub fn Nav() -> impl IntoView {
                             href="https://crates.io/crates/commitbee"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-sm font-medium text-comb hover:text-bark transition-colors"
+                            class="text-sm font-medium transition-colors text-comb hover:text-bark"
                         >
                             "crates.io"
                         </a>

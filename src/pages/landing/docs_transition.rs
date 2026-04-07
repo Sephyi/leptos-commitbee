@@ -8,17 +8,17 @@ use leptos::prelude::*;
 pub fn DocsTransitionSection() -> impl IntoView {
     view! {
         <section class="py-24 bg-surface/55 backdrop-blur-md">
-            <div class="mx-auto max-w-5xl px-4">
+            <div class="max-w-5xl px-4 mx-auto">
                 <crate::components::scroll_reveal::ScrollReveal>
                     <h2 class="text-3xl font-bold text-center text-bark sm:text-4xl">
                         "Dive deeper"
                     </h2>
-                    <p class="mt-4 text-center text-comb max-w-xl mx-auto">
+                    <p class="max-w-xl mx-auto mt-4 text-center text-comb">
                         "Explore the full documentation to master CommitBee."
                     </p>
                 </crate::components::scroll_reveal::ScrollReveal>
 
-                <div class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-4 mt-12 sm:grid-cols-2">
                     <DocLink slug="getting-started" title="Getting Started" description="Install and generate your first commit message"/>
                     <DocLink slug="configuration" title="Configuration" description="5-level config system, TOML files, environment variables"/>
                     <DocLink slug="llm-providers" title="LLM Providers" description="Ollama, OpenAI, and Anthropic setup"/>
@@ -35,11 +35,11 @@ fn DocLink(slug: &'static str, title: &'static str, description: &'static str) -
         <crate::components::scroll_reveal::ScrollReveal>
             <a
                 href=format!("/docs/{slug}")
-                class="block rounded-xl border border-honey/20 bg-surface-raised p-6 hover:border-honey/40 hover:shadow-lg hover:shadow-honey/5 transition-all group"
+                class="block p-6 transition-all border rounded-xl border-honey/20 bg-surface-raised hover:border-honey/40 hover:shadow-lg hover:shadow-honey/5 group"
             >
-                <h3 class="text-lg font-semibold text-bark group-hover:text-honey transition-colors">{title}</h3>
+                <h3 class="text-lg font-semibold transition-colors text-bark group-hover:text-honey">{title}</h3>
                 <p class="mt-1 text-sm text-comb">{description}</p>
-                <span class="mt-3 inline-block text-sm text-honey">"Read more →"</span>
+                <span class="inline-block mt-3 text-sm text-honey">"Read more →"</span>
             </a>
         </crate::components::scroll_reveal::ScrollReveal>
     }
