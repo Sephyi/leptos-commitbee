@@ -26,6 +26,37 @@ Before anything is sent to an LLM, CommitBee scans all staged content with **24 
 | Cryptographic | Private keys (PEM), JWT tokens |
 | Generic | API key assignments, quoted secrets, unquoted secrets |
 
+### Full pattern list
+
+Every built-in pattern, grouped by category. Names match the strings used in `disabled_secret_patterns`.
+
+| # | Category | Name | Detects |
+| --- | --- | --- | --- |
+| 1 | Cloud Providers | AWS Access Key | AWS IAM access key ID (`AKIA...`) |
+| 2 | Cloud Providers | AWS Secret Key | AWS secret access key assignment (40-char base64) |
+| 3 | Cloud Providers | GCP Service Account | Google Cloud service account JSON key (`"type": "service_account"`) |
+| 4 | Cloud Providers | GCP API Key | Google API key (`AIza...`) |
+| 5 | Cloud Providers | Azure Storage Key | Azure storage account key (`AccountKey=...`) |
+| 6 | AI/ML | OpenAI Key | OpenAI API key (legacy `sk-...`, project `sk-proj-...`, or service account `sk-svcacct-...`) |
+| 7 | AI/ML | Anthropic Key | Anthropic API key (`sk-ant-...`) |
+| 8 | AI/ML | HuggingFace Token | HuggingFace access token (`hf_...`) |
+| 9 | Source Control | GitHub Token | GitHub personal access or OAuth token (`ghp_...`, `ghs_...`) |
+| 10 | Source Control | GitHub Fine-Grained Token | GitHub fine-grained personal access token (`github_pat_...`) |
+| 11 | Source Control | GitLab Token | GitLab personal access token (`glpat-...`) |
+| 12 | Communication | Slack Token | Slack bot, user, or app token (`xoxb-`, `xoxp-`, `xoxa-`, `xoxr-`, `xoxs-`) |
+| 13 | Communication | Slack Webhook | Slack incoming webhook URL (`hooks.slack.com/services/...`) |
+| 14 | Communication | Discord Webhook | Discord webhook URL (`discord.com/api/webhooks/...`) |
+| 15 | Payment & SaaS | Stripe Key | Stripe secret or restricted API key (`sk_live_`, `sk_test_`, `rk_live_`, `rk_test_`) |
+| 16 | Payment & SaaS | Twilio Key | Twilio API key SID (`SK` + 32 hex chars) |
+| 17 | Payment & SaaS | SendGrid Key | SendGrid API key (`SG.<id>.<secret>`) |
+| 18 | Payment & SaaS | Mailgun Key | Mailgun API key (`key-` + 32 hex chars) |
+| 19 | Database | Connection String | Database or message broker URI (`mongodb://`, `mongodb+srv://`, `postgres://`, `postgresql://`, `mysql://`, `redis://`, `amqp://`) |
+| 20 | Cryptographic | Private Key | PEM-encoded private key (`-----BEGIN ... PRIVATE KEY-----`, RSA, EC, etc.) |
+| 21 | Cryptographic | JWT Token | JSON Web Token (three-part Base64 `eyJ...`) |
+| 22 | Generic | Generic API Key | Generic `api_key` / `apikey` assignment (20+ chars) |
+| 23 | Generic | Generic Secret | Quoted `password` / `secret` / `token` assignment (8+ chars) |
+| 24 | Generic | Generic Secret (unquoted) | Unquoted `password` / `secret` / `token` assignment (16+ chars) |
+
 You can extend or customize the pattern set via config:
 
 ```toml
