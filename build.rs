@@ -56,6 +56,8 @@ fn main() {
     let mut routes = vec![
         "/".to_string(),
         "/docs".to_string(),
+        "/imprint".to_string(),
+        "/privacy".to_string(),
         "/not-found".to_string(),
     ];
 
