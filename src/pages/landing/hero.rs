@@ -8,7 +8,6 @@ use leptos::prelude::*;
 pub fn HeroSection() -> impl IntoView {
     view! {
         <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-            <div class="absolute inset-0 hex-bg"/>
 
             <div class="relative mx-auto max-w-4xl px-4 text-center">
                 <crate::components::scroll_reveal::ScrollReveal class="reveal">
