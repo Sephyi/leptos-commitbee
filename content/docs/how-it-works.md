@@ -52,7 +52,8 @@ Assembles a budget-aware prompt within the token limit (~6K tokens).
 Streams the prompt to your chosen model (Ollama, OpenAI, or Anthropic) and collects the response token by token.
 
 ### 6. Validator
-Checks the LLM's output against the evidence flags. If the model says "fix" but there's no bug-fix evidence in the code, or if the subject is too long, or if it used generic wording — the validator catches it and retries with targeted correction instructions. Up to 3 attempts.
+Checks the LLM's output against the evidence flags. If the model says "fix" but there's no bug-fix evidence in the code, or if the subject  
+is too long, or if it used generic wording — the validator catches it and retries with targeted correction instructions. Up to 3 attempts.
 
 ### 7. Sanitizer
 Does the final cleanup: 

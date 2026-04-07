@@ -30,6 +30,7 @@ When run without a command, CommitBee generates a commit message for your staged
 | `--no-scope` | | Disable scope in commit messages |
 | `--clipboard` | | Copy message to clipboard instead of committing |
 | `--exclude <GLOB>` | | Exclude files matching glob pattern (repeatable) |
+| `--locale <LANG>` | | Generate the commit message subject and body in a specific language (e.g. `de`) |
 | `--allow-secrets` | | Allow committing with detected secrets (Ollama only) |
 | `--show-prompt` | | Display the full prompt sent to the LLM |
 | `--verbose` | `-v` | Show symbol extraction details |
@@ -73,6 +74,10 @@ commitbee --clipboard            # Copy message to clipboard (no commit)
 # Exclude files
 commitbee --exclude "*.lock"     # Skip lock files from analysis
 commitbee --exclude "*.lock" --exclude "vendor/**"  # Multiple patterns
+
+# Multi-Language Commits
+commitbee --locale de            # Write commit subject and body in German
+commitbee --locale ja            # Write commit in Japanese
 
 # Scripting / CI
 commitbee --yes --dry-run        # Generate message, print to stdout, exit

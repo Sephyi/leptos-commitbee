@@ -19,11 +19,21 @@ However, you can tailor its behavior to match your team's specific conventions.
 You can adjust formatting rules in your `config.toml`. 
 
 ```toml
-[prompt]
-enforce_imperative = true
-max_subject_length = 72
-include_issue_references = true
+[format]
+include_body = true
+lowercase_subject = true
 ```
+
+## Multi-Language Commits
+
+By default, CommitBee generates messages in English according to the specification. You can instruct the LLM to output the subject and body in a specific language (while retaining the English `feat`/`fix` type prefix) by defining the `locale` in your root configuration:
+
+```toml
+# Write commit subject and body in German
+locale = "de"
+```
+
+You can also override this on the fly: `commitbee --locale fr`.
 
 ## System Prompts
 

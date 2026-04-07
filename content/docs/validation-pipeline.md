@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "Validation Pipeline"
-order: 2
+order: 3
 section: "Internals"
 description: "The 7-rule validation pipeline that ensures commit message quality"
 ---

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
 title: "Security & Safety"
-order: 3
+order: 4
 section: "Internals"
 description: "Secret scanning with 24 built-in patterns across 13 categories"
 ---
@@ -70,7 +70,7 @@ disabled_secret_patterns = ["Generic Secret (unquoted)"]
 If secrets are found:
 
 - **Ollama (local)**: Warning displayed, proceeds (data stays on your machine)
-- **Cloud providers**: Hard error, commit blocked. Use `--allow-secrets` to override (Ollama only)
+- **Cloud providers**: Hard error, commit blocked. Use `--allow-secrets` to override
 
 Scanning only checks added lines — removed lines are ignored (they're already in git history).
 
@@ -86,4 +86,5 @@ The conflict checker is smart about false positives:
 
 ## Data Privacy
 
-With the default Ollama provider, **no data ever leaves your machine**. The entire pipeline runs locally. Cloud providers (OpenAI, Anthropic) send the prompt over HTTPS — which includes your diff and symbol information. Choose your provider accordingly.
+With the default Ollama provider, **no data ever leaves your machine**. The entire pipeline runs locally.  
+Cloud providers (OpenAI, Anthropic) send the prompt over HTTPS — which includes your diff and symbol information. Choose your provider accordingly.

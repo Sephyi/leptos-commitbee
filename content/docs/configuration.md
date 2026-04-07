@@ -80,6 +80,11 @@ rename_threshold = 70
 # Excluded files are listed in output but not sent to the LLM.
 # exclude_patterns = ["*.lock", "**/*.generated.*"]
 
+# Language for commit message generation (ISO 639-1 code, e.g., "de", "ja", "fr")
+# When set, the LLM is instructed to write the subject and body in this language.
+# The conventional type and scope (e.g. feat, fix) remain in English per spec.
+# locale = "de"
+
 # Commit message format options
 [format]
 # Include body/description in commit message
