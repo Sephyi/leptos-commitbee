@@ -74,9 +74,7 @@ fn main() {
         let output_path = if *route == "/" {
             dist_dir.join("index.html")
         } else {
-            dist_dir
-                .join(route.trim_start_matches('/'))
-                .join("index.html")
+            dist_dir.join(format!("{}.html", route.trim_start_matches('/')))
         };
 
         if let Some(parent) = output_path.parent() {
@@ -117,7 +115,7 @@ fn main() {
     }
 
     // Generate 404.html from the pre-rendered /not-found route
-    let not_found_path = dist_dir.join("not-found").join("index.html");
+    let not_found_path = dist_dir.join("not-found.html");
     let fallback_path = dist_dir.join("index.html");
     let source_404 = if not_found_path.exists() {
         &not_found_path
