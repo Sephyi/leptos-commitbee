@@ -82,8 +82,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <link rel="icon" href="/images/favicon.svg" type="image/svg+xml"/>
                 <link rel="alternate icon" href="/images/favicon.ico" sizes="any"/>
                 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/>
-                <link rel="preload" href="/fonts/Inter-Variable.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
-                <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
+                <link rel="preload" href="/fonts/Inter-Variable-Latin.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
+                <link rel="preload" href="/fonts/JetBrainsMono-Latin.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="preload" href="/fonts/Archia-Regular.woff2" r#as="font" r#type="font/woff2" crossorigin="anonymous"/>
                 <link rel="stylesheet" href=css_href/>
                 // Inline theme script: prevents FOUC
