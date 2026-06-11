@@ -19,6 +19,30 @@ pub fn DocsPage() -> impl IntoView {
             Some(page) => {
                 let (prev, next) = loader::get_adjacent(&current_slug);
 
+                let page_url = format!("{}/docs/{}", crate::components::seo::BASE_URL, current_slug);
+                let json_ld = serde_json::json!({
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        {
+                            "@type": "TechArticle",
+                            "headline": page.title,
+                            "description": page.description,
+                            "url": page_url,
+                            "author": {"@type": "Person", "name": "Sephyi", "url": "https://sephy.io"}
+                        },
+                        {
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                {"@type": "ListItem", "position": 1, "name": "Docs",
+                                 "item": format!("{}/docs/getting-started", crate::components::seo::BASE_URL)},
+                                {"@type": "ListItem", "position": 2, "name": page.section},
+                                {"@type": "ListItem", "position": 3, "name": page.title, "item": page_url}
+                            ]
+                        }
+                    ]
+                })
+                .to_string();
+
                 view! {
                     <crate::components::seo::SeoMeta
                         title=format!("{} - CommitBee Docs", page.title)
@@ -26,6 +50,7 @@ pub fn DocsPage() -> impl IntoView {
                         path=format!("/docs/{}", current_slug)
                         article=true
                     />
+                    <script type="application/ld+json" inner_html=json_ld></script>
 
                     <div id="main-content" class="flex min-h-screen">
                         // Left sidebar (sticky, full-height)
