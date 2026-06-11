@@ -52,7 +52,7 @@ pub fn DocsPage() -> impl IntoView {
                     />
                     <script type="application/ld+json" inner_html=json_ld></script>
 
-                    <div id="main-content" class="flex min-h-screen">
+                    <div class="flex min-h-screen">
                         // Left sidebar (sticky, full-height)
                         <div class="hidden lg:block">
                             <DocSidebar current_slug=current_slug.clone()/>
@@ -61,7 +61,7 @@ pub fn DocsPage() -> impl IntoView {
                         // Main content — glass card so the shader background
                         // shows through faintly while the article stays
                         // readable.
-                        <main class="flex-1 min-w-0 px-6 py-8 lg:px-10 bg-surface/65 backdrop-blur-md">
+                        <main id="main-content" class="flex-1 min-w-0 px-6 py-8 lg:px-10 bg-surface/65 backdrop-blur-md">
                             // Breadcrumbs
                             <nav class="mb-6 text-sm text-comb" aria-label="Breadcrumb">
                                 <a href="/docs/getting-started" class="transition-colors hover:text-honey">"Docs"</a>

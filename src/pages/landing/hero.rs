@@ -43,7 +43,7 @@ pub fn HeroSection() -> impl IntoView {
 
                 // Terminal mockup
                 <crate::components::scroll_reveal::ScrollReveal class="reveal-scale">
-                    <div class="max-w-2xl mx-auto mt-16 overflow-hidden border shadow-2xl rounded-xl border-honey/20 bg-surface-raised shadow-honey/5">
+                    <div aria-hidden="true" class="max-w-2xl mx-auto mt-16 overflow-hidden border shadow-2xl rounded-xl border-honey/20 bg-surface-raised shadow-honey/5">
                         <div class="flex items-center gap-2 px-4 py-3 border-b bg-pollen/50 border-honey/10">
                             <div class="w-3 h-3 rounded-full bg-red-400/60"/>
                             <div class="w-3 h-3 rounded-full bg-yellow-400/60"/>

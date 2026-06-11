@@ -18,9 +18,9 @@ pub fn DocSidebar(#[prop(into)] current_slug: String) -> impl IntoView {
                     .map(|(section, pages)| {
                         view! {
                             <div class="mb-5">
-                                <h3 class="mb-1.5 px-3 text-[0.6875rem] font-semibold uppercase tracking-widest text-comb/70">
+                                <div class="mb-1.5 px-3 text-[0.6875rem] font-semibold uppercase tracking-widest text-comb">
                                     {section}
-                                </h3>
+                                </div>
                                 <ul class="space-y-0.5">
                                     {pages
                                         .into_iter()

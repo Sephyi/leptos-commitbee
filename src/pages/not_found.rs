@@ -10,7 +10,7 @@ pub fn NotFound() -> impl IntoView {
     view! {
         <Title text="404 - CommitBee"/>
         <Meta name="robots" content="noindex"/>
-        <div class="flex items-center justify-center min-h-screen">
+        <main id="main-content" class="flex items-center justify-center min-h-screen">
             <div class="text-center">
                 <div class="mb-4 text-6xl">"🐝"</div>
                 <h1 class="text-5xl font-bold text-bark">"404"</h1>
@@ -24,6 +24,6 @@ pub fn NotFound() -> impl IntoView {
                     </a>
                 </div>
             </div>
-        </div>
+        </main>
     }
 }

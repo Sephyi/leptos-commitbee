@@ -11,7 +11,7 @@ pub fn Nav() -> impl IntoView {
             <div class="relative flex items-center justify-between w-full h-16 px-4">
                 // Left: Logo
                 <a href="/" class="relative z-10 flex items-center gap-2 text-lg font-bold transition-colors text-bark hover:text-honey">
-                    <span class="text-2xl">"🐝"</span>
+                    <span class="text-2xl" aria-hidden="true">"🐝"</span>
                     <span>"CommitBee"</span>
                 </a>
 

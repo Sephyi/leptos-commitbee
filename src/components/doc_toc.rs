@@ -18,7 +18,7 @@ pub fn DocToc(headings: &'static [(u8, &'static str, &'static str)]) -> impl Int
     view! {
         <aside class="hidden w-64 pl-8 pr-4 xl:block shrink-0">
             <div class="sticky top-20">
-                <h4 class="mb-3 text-xs font-semibold tracking-wider uppercase text-comb">"On this page"</h4>
+                <div class="mb-3 text-xs font-semibold tracking-wider uppercase text-comb">"On this page"</div>
                 <ul class="space-y-1 border-l border-honey/10">
                     {toc_headings
                         .into_iter()

@@ -88,6 +88,7 @@ pub fn PipelineDemo() -> impl IntoView {
             // Controls
             <div class="flex items-center gap-3 px-6 py-4 border-b border-honey/10">
                 <button
+                    type="button"
                     on:click=move |_| {
                         if is_playing.get() {
                             set_is_playing.set(false);
@@ -103,6 +104,7 @@ pub fn PipelineDemo() -> impl IntoView {
                     {move || if is_playing.get() { "Pause" } else { "Play" }}
                 </button>
                 <button
+                    type="button"
                     on:click=move |_| {
                         set_is_playing.set(false);
                         set_current_step.update(|s| {
@@ -117,6 +119,7 @@ pub fn PipelineDemo() -> impl IntoView {
                     "← Prev"
                 </button>
                 <button
+                    type="button"
                     on:click=move |_| {
                         set_is_playing.set(false);
                         set_current_step.update(|s| {

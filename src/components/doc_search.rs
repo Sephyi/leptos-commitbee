@@ -239,7 +239,7 @@ pub fn DocSearch() -> impl IntoView {
             on:click=move |_| set_is_open.set(true)
             class="hidden md:flex w-full items-center gap-2 rounded-lg border border-honey/20 bg-surface px-3 py-1.5 text-sm text-comb hover:border-honey/40 transition-colors"
         >
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             "Search docs"
@@ -262,7 +262,7 @@ pub fn DocSearch() -> impl IntoView {
                 >
                     // Search input
                     <div class="flex items-center px-4 border-b border-honey/10">
-                        <svg class="w-5 h-5 text-comb" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg aria-hidden="true" class="w-5 h-5 text-comb" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         <input
@@ -333,7 +333,7 @@ pub fn MobileSearchButton() -> impl IntoView {
                 }
             }
         >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
         </button>

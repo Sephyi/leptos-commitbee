@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 
-use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, html};
+use pulldown_cmark::{html, Event, Options, Parser, Tag, TagEnd};
 use serde::Deserialize;
 use std::fmt::Write as FmtWrite;
 use std::fs;
@@ -85,7 +85,7 @@ fn main() {
             .add_tag_attributes("span", ["style"])
             .add_tag_attributes("pre", ["style"])
             .add_tag_attributes("div", ["style", "data-lang"])
-            .add_tag_attributes("button", ["data-code"])
+            .add_tag_attributes("button", ["data-code", "type"])
             .add_tags(["button"])
             .clean(&html_content)
             .to_string();
@@ -238,7 +238,7 @@ fn render_markdown_with_syntax_highlighting(
                     };
 
                 let html = format!(
-                    r#"<div class="relative my-6 overflow-hidden rounded-lg code-block-wrapper group" data-lang="{lang_display}"{bg_style}><div class="flex items-center justify-between px-4 py-2 text-xs border-b code-block-header border-white/10"><span class="text-white/50">{lang_display}</span><button class="transition-opacity opacity-0 copy-btn group-hover:opacity-100 focus:opacity-100 text-white/40 hover:text-white/80" data-code="{escaped}">Copy</button></div><pre><code>{highlighted}</code></pre></div>"#,
+                    r#"<div class="relative my-6 overflow-hidden rounded-lg code-block-wrapper group" data-lang="{lang_display}"{bg_style}><div class="flex items-center justify-between px-4 py-2 text-xs border-b code-block-header border-white/10"><span class="text-white/50">{lang_display}</span><button type="button" class="transition-opacity opacity-0 copy-btn group-hover:opacity-100 focus:opacity-100 text-white/40 hover:text-white/80" data-code="{escaped}">Copy</button></div><pre><code>{highlighted}</code></pre></div>"#,
                     escaped = html_escape(&code_content)
                 );
 
