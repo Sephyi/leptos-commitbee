@@ -130,11 +130,19 @@ pub fn DocSearch() -> impl IntoView {
         let last = prev_open.get_value();
         prev_open.set_value(open);
         if !open && last {
-            if let Some(document) = web_sys::window().and_then(|w| w.document())
-                && let Some(el) = document.get_element_by_id("doc-search-trigger")
-                && let Ok(btn) = el.dyn_into::<web_sys::HtmlElement>()
-            {
-                let _ = btn.focus();
+            if let Some(document) = web_sys::window().and_then(|w| w.document()) {
+                let desktop = document
+                    .get_element_by_id("doc-search-trigger")
+                    .and_then(|el| el.dyn_into::<web_sys::HtmlElement>().ok())
+                    .filter(|el| el.offset_parent().is_some());
+                let target = desktop.or_else(|| {
+                    document
+                        .get_element_by_id("mobile-search-trigger")
+                        .and_then(|el| el.dyn_into::<web_sys::HtmlElement>().ok())
+                });
+                if let Some(btn) = target {
+                    let _ = btn.focus();
+                }
             }
         }
     });
@@ -145,10 +153,7 @@ pub fn DocSearch() -> impl IntoView {
             // Use a short delay to ensure the DOM has rendered the input
             let cb = Closure::<dyn Fn()>::new(move || {
                 if let Some(document) = web_sys::window().and_then(|w| w.document())
-                    && let Some(el) = document
-                        .query_selector("input[placeholder='Search documentation...']")
-                        .ok()
-                        .flatten()
+                    && let Some(el) = document.get_element_by_id("doc-search-input")
                 {
                     let _ = el.dyn_into::<web_sys::HtmlElement>().map(|el| el.focus());
                 }
@@ -266,17 +271,43 @@ pub fn DocSearch() -> impl IntoView {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         <input
+                            id="doc-search-input"
                             type="text"
+                            role="combobox"
+                            aria-label="Search documentation"
+                            aria-expanded="true"
+                            aria-controls="doc-search-results"
+                            aria-autocomplete="list"
+                            aria-activedescendant=move || {
+                                selected_index
+                                    .get()
+                                    .map(|i| format!("doc-search-result-{i}"))
+                                    .unwrap_or_default()
+                            }
                             placeholder="Search documentation..."
-                            class="flex-1 px-3 py-4 bg-transparent text-bark placeholder:text-comb/50 outline-hidden"
+                            class="flex-1 px-3 py-4 bg-transparent text-bark placeholder:text-comb/70 outline-hidden"
                             autofocus=true
                             on:input=move |e| set_query.set(event_target_value(&e))
                         />
                         <kbd class="px-2 py-1 text-xs rounded bg-surface-raised text-comb">"esc"</kbd>
                     </div>
 
+                    // Screen-reader result count announcement
+                    <div class="sr-only" role="status">
+                        {move || {
+                            let n = results.get().len();
+                            if query.get().is_empty() {
+                                String::new()
+                            } else if n == 0 {
+                                "No results".to_string()
+                            } else {
+                                format!("{n} results")
+                            }
+                        }}
+                    </div>
+
                     // Results
-                    <div class="p-2 overflow-y-auto max-h-80">
+                    <div id="doc-search-results" role="listbox" aria-label="Search results" class="p-2 overflow-y-auto max-h-80">
                         {move || {
                             let r = results.get();
                             if r.is_empty() && !query.get().is_empty() {
@@ -295,6 +326,9 @@ pub fn DocSearch() -> impl IntoView {
                                         view! {
                                             <a
                                                 href=href
+                                                id=format!("doc-search-result-{i}")
+                                                role="option"
+                                                aria-selected=if is_selected { "true" } else { "false" }
                                                 class=class
                                                 on:click=move |_| set_is_open.set(false)
                                             >
@@ -322,6 +356,7 @@ pub fn DocSearch() -> impl IntoView {
 pub fn MobileSearchButton() -> impl IntoView {
     view! {
         <button
+            id="mobile-search-trigger"
             type="button"
             class="p-2 transition-colors md:hidden text-comb hover:text-bark"
             aria-label="Search documentation"
