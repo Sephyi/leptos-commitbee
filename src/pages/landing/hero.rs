@@ -27,7 +27,7 @@ pub fn HeroSection() -> impl IntoView {
                 <crate::components::scroll_reveal::ScrollReveal class="reveal">
                     <div class="flex items-center justify-center gap-4 mt-10">
                         <a
-                            href="#install"
+                            href="/docs/getting-started"
                             class="px-6 py-3 text-sm font-semibold text-white transition-colors rounded-lg shadow-lg bg-honey shadow-honey/25 hover:bg-honey-dark"
                         >
                             "Get Started"
