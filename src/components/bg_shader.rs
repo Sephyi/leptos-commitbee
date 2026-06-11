@@ -9,16 +9,17 @@
 //! passed as a uniform so the field subtly warps around the cursor. Renders
 //! into a single fullscreen triangle — no geometry beyond that.
 //!
-//! Fallback: if WebGL2 is unavailable or the user prefers reduced motion, the
-//! canvas is replaced with a static CSS radial-gradient backdrop so the hero
-//! still feels intentional.
+//! If WebGL2 is unavailable or the user prefers reduced motion, the canvas
+//! element is hidden and the page falls through to the body background color.
 //!
-//! This is an `#[island]` so it only hydrates on the landing page.
+//! This is an `#[island]` that mounts at the App root, rendering on every page.
 
 use leptos::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 use web_sys::{HtmlCanvasElement, WebGl2RenderingContext as GL, WebGlProgram, WebGlShader};
+
+const RENDER_SCALE: f64 = 0.6;
 
 const VERTEX_SHADER: &str = r#"#version 300 es
 precision highp float;
@@ -231,6 +232,7 @@ pub fn BgShader() -> impl IntoView {
         let state = std::rc::Rc::new(std::cell::RefCell::new(ShaderState {
             mouse: (0.5, 0.3),
             start: js_sys::Date::now(),
+            last_frame: 0.0,
         }));
 
         // Resize to match the canvas's own CSS-driven client box (the canvas
@@ -244,7 +246,8 @@ pub fn BgShader() -> impl IntoView {
             move || {
                 let dpr = web_sys::window()
                     .map(|w| w.device_pixel_ratio().min(2.0))
-                    .unwrap_or(1.0);
+                    .unwrap_or(1.0)
+                    * RENDER_SCALE;
                 let cw = canvas.client_width().max(1) as f64;
                 let ch = canvas.client_height().max(1) as f64;
                 let w = (cw * dpr).max(1.0) as u32;
@@ -314,8 +317,18 @@ pub fn BgShader() -> impl IntoView {
             let Some(window) = web_sys::window() else {
                 return;
             };
-            let s = render_state.borrow();
+
             let now = js_sys::Date::now();
+            if now - render_state.borrow().last_frame < 1000.0 / 30.0 {
+                if let Some(cb) = f.borrow().as_ref() {
+                    let _ = window
+                        .request_animation_frame(cb.as_ref().unchecked_ref::<js_sys::Function>());
+                }
+                return;
+            }
+            render_state.borrow_mut().last_frame = now;
+
+            let s = render_state.borrow();
             let t = ((now - s.start) / 1000.0) as f32;
             let dark = web_sys::window()
                 .and_then(|w| w.document())
@@ -360,4 +373,5 @@ pub fn BgShader() -> impl IntoView {
 struct ShaderState {
     mouse: (f32, f32),
     start: f64,
+    last_frame: f64,
 }
