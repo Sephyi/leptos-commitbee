@@ -1,0 +1,5 @@
+# Apple's new ld-prime linker (Xcode 15+) crashes with an assertion on long
+# Rust-generated symbol names. ld_classic (ld64) has no such limit. This flag
+# only applies on aarch64-apple-darwin and is ignored by Linux CI.
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-args=-Wl,-ld_classic"]
