@@ -27,7 +27,7 @@ pub fn DocSidebar(#[prop(into)] current_slug: String) -> impl IntoView {
                                         .map(|page| {
                                             let is_active = page.slug == current_slug;
                                             let link_class = if is_active {
-                                                "block rounded-lg px-3 py-1.5 text-sm font-medium text-honey bg-honey/10"
+                                                "block rounded-lg px-3 py-1.5 text-sm font-medium text-honey-text bg-honey/10"
                                             } else {
                                                 "block rounded-lg px-3 py-1.5 text-sm text-comb hover:text-bark hover:bg-pollen/50 transition-colors"
                                             };

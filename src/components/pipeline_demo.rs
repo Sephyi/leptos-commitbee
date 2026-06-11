@@ -158,7 +158,7 @@ pub fn PipelineDemo() -> impl IntoView {
                                     let active = i <= current_step.get();
                                     format!(
                                         "text-[10px] font-medium {}",
-                                        if active { "text-honey" } else { "text-comb/50" }
+                                        if active { "text-honey-text" } else { "text-comb" }
                                     )
                                 }>
                                     {step.name}
@@ -170,13 +170,13 @@ pub fn PipelineDemo() -> impl IntoView {
             </div>
 
             // Current step detail
-            <div class="p-6">
+            <div class="p-6" aria-live="polite">
                 {move || {
                     let step = &STEPS[current_step.get()];
                     view! {
                         <div class="pipeline-step active">
                             <div class="flex items-center gap-3 mb-4">
-                                <span class="text-3xl">{step.icon}</span>
+                                <span class="text-3xl" aria-hidden="true">{step.icon}</span>
                                 <div>
                                     <h3 class="text-lg font-semibold text-bark">{step.name}</h3>
                                     <p class="text-sm text-comb">{step.description}</p>

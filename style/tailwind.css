@@ -26,6 +26,7 @@
   --color-honey: var(--honey);
   --color-honey-light: var(--honey-light);
   --color-honey-dark: var(--honey-dark);
+  --color-honey-text: var(--honey-text);
   --color-nectar: var(--nectar);
   --color-comb: var(--comb);
   --color-bark: var(--bark);
@@ -76,6 +77,7 @@
     --honey: #f59e0b;
     --honey-light: #fcd34d;
     --honey-dark: #d97706;
+    --honey-text: #b45309;
     --nectar: #fffbeb;
     --comb: #78716c;
     --bark: #1c1917;
@@ -88,6 +90,7 @@
     --honey: #fbbf24;
     --honey-light: #fcd34d;
     --honey-dark: #f59e0b;
+    --honey-text: #fbbf24;
     --nectar: #1c1917;
     --comb: #a8a29e;
     --bark: #fafaf9;
@@ -243,10 +246,12 @@
   }
 
   .prose a {
-    color: var(--color-honey);
+    color: var(--color-honey-text);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, var(--color-honey) 40%, transparent);
   }
   .prose a:hover {
-    text-decoration: underline;
+    text-decoration-color: currentColor;
   }
 
   .prose ul {
