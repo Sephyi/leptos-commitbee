@@ -138,15 +138,26 @@ fn main() {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
          <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
     );
-    for route in routes.iter().filter(|r| **r != "/not-found") {
+    for route in routes
+        .iter()
+        .filter(|r| **r != "/not-found" && **r != "/docs")
+    {
         let priority = if *route == "/" { "1.0" } else { "0.8" };
         let loc = if *route == "/" {
-            base_url.clone()
+            format!("{base_url}/")
         } else {
             format!("{base_url}{route}")
         };
+        let lastmod = if let Some(slug) = route.strip_prefix("/docs/") {
+            git_lastmod(&format!("content/docs/{slug}.md"))
+        } else {
+            git_lastmod(".")
+        };
+        let lastmod_tag = lastmod
+            .map(|d| format!("    <lastmod>{d}</lastmod>\n"))
+            .unwrap_or_default();
         sitemap.push_str(&format!(
-            "  <url>\n    <loc>{loc}</loc>\n    <priority>{priority}</priority>\n  </url>\n"
+            "  <url>\n    <loc>{loc}</loc>\n{lastmod_tag}    <priority>{priority}</priority>\n  </url>\n"
         ));
     }
     sitemap.push_str("</urlset>\n");
@@ -169,6 +180,16 @@ fn env_port() -> Option<u16> {
 
 fn env_base_url() -> Option<String> {
     std::env::var("SITE_BASE_URL").ok()
+}
+
+/// ISO-8601 timestamp of the last commit touching `path`, if available.
+fn git_lastmod(path: &str) -> Option<String> {
+    let out = Command::new("git")
+        .args(["log", "-1", "--format=%cI", "--", path])
+        .output()
+        .ok()?;
+    let s = String::from_utf8(out.stdout).ok()?.trim().to_string();
+    (!s.is_empty()).then_some(s)
 }
 
 fn wait_for_server(port: u16, timeout: Duration) -> bool {
@@ -247,6 +268,10 @@ fn collect_routes_files(dir: &Path) -> Vec<PathBuf> {
 fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
     fs::create_dir_all(dst)?;
     for entry in fs::read_dir(src)?.flatten() {
+        // Skip dotfiles (.DS_Store etc.) — nothing hidden is intentionally deployed.
+        if entry.file_name().to_string_lossy().starts_with('.') {
+            continue;
+        }
         let src_path = entry.path();
         let dst_path = dst.join(entry.file_name());
         if src_path.is_dir() {

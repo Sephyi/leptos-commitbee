@@ -26,6 +26,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history — required for per-file git lastmod
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@nightly
@@ -57,6 +59,8 @@ jobs:
 
       - name: Pre-render to static HTML
         run: cargo run --bin prerender --features ssr --release
+        env:
+          SITE_BASE_URL: https://commitbee.buzz
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
