@@ -9,6 +9,7 @@ use leptos_meta::*;
 pub fn NotFound() -> impl IntoView {
     view! {
         <Title text="404 - CommitBee"/>
+        <Meta name="robots" content="noindex"/>
         <div class="flex items-center justify-center min-h-screen">
             <div class="text-center">
                 <div class="mb-4 text-6xl">"🐝"</div>

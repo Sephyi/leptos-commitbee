@@ -27,6 +27,8 @@ fn NotFoundPage() -> impl IntoView {
 #[component]
 fn DocsRedirect() -> impl IntoView {
     view! {
+        <leptos_meta::Title text="CommitBee Docs"/>
+        <leptos_meta::Link rel="canonical" href="https://commitbee.buzz/docs/getting-started"/>
         <meta http-equiv="refresh" content="0;url=/docs/getting-started"/>
         <p>"Redirecting to "<a href="/docs/getting-started">"Getting Started"</a>"..."</p>
     }
