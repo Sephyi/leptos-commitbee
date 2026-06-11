@@ -66,6 +66,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"/>
+                <meta name="theme-color" content="#0c0a09" media="(prefers-color-scheme: dark)"/>
                 // CSP notes:
                 //   script-src 'unsafe-inline': required — Leptos HydrationScripts injects inline
                 //     <script> tags containing per-build hashed bundle filenames; static hash-based

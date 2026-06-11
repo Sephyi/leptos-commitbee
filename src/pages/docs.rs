@@ -20,11 +20,12 @@ pub fn DocsPage() -> impl IntoView {
                 let (prev, next) = loader::get_adjacent(&current_slug);
 
                 view! {
-                    <Title text=format!("{} - CommitBee Docs", page.title)/>
-                    <Meta name="description" content=page.description/>
-                    <Meta property="og:title" content=format!("{} - CommitBee Docs", page.title)/>
-                    <Meta property="og:description" content=page.description/>
-                    <Link rel="canonical" href=format!("https://commitbee.buzz/docs/{}", current_slug)/>
+                    <crate::components::seo::SeoMeta
+                        title=format!("{} - CommitBee Docs", page.title)
+                        description=page.description
+                        path=format!("/docs/{}", current_slug)
+                        article=true
+                    />
 
                     <div id="main-content" class="flex min-h-screen">
                         // Left sidebar (sticky, full-height)

@@ -12,5 +12,6 @@ pub mod mobile_menu;
 pub mod nav;
 pub mod pipeline_demo;
 pub mod scroll_reveal;
+pub mod seo;
 pub mod theme_toggle;
 pub mod toc_highlighter;

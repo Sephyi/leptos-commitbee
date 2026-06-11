@@ -11,7 +11,6 @@ mod pipeline;
 mod problem;
 
 use leptos::prelude::*;
-use leptos_meta::*;
 
 use comparison::ComparisonSection;
 use differentiators::DifferentiatorsSection;
@@ -24,12 +23,11 @@ use problem::ProblemSection;
 #[component]
 pub fn Landing() -> impl IntoView {
     view! {
-        <Title text="CommitBee - The commit message generator that actually understands your code"/>
-        <Meta name="description" content="CommitBee uses tree-sitter semantic analysis and LLMs to generate high-quality conventional commit messages. Rust CLI tool."/>
-        <Meta property="og:title" content="CommitBee"/>
-        <Meta property="og:description" content="The commit message generator that actually understands your code."/>
-        <Meta property="og:type" content="website"/>
-        <Link rel="canonical" href="https://commitbee.buzz/"/>
+        <crate::components::seo::SeoMeta
+            title="CommitBee – Semantic AI Commit Message Generator"
+            description="CommitBee is a Rust CLI that generates Conventional Commit messages from your staged changes using tree-sitter semantic analysis and local or cloud LLMs."
+            path="/"
+        />
 
         <main id="main-content">
             <HeroSection/>
