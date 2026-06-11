@@ -134,6 +134,27 @@ fn main() {
     fs::write(dist_dir.join("robots.txt"), &robots).expect("Failed to write robots.txt");
     println!("    robots.txt -> dist/robots.txt");
 
+    // Generate llms.txt — AI-crawler-friendly site map (https://llmstxt.org)
+    let mut llms = String::from(
+        "# CommitBee\n\n\
+         > CommitBee is a Rust CLI tool that generates Conventional Commit messages \
+         from staged changes using tree-sitter semantic analysis and LLMs.\n\n\
+         ## Documentation\n\n",
+    );
+    for page in commitbee_web::content::loader::PAGES {
+        llms.push_str(&format!(
+            "- [{}]({base_url}/docs/{}): {}\n",
+            page.title, page.slug, page.description
+        ));
+    }
+    llms.push_str(
+        "\n## Source\n\n\
+         - [GitHub](https://github.com/sephyi/commitbee)\n\
+         - [crates.io](https://crates.io/crates/commitbee)\n",
+    );
+    fs::write(dist_dir.join("llms.txt"), &llms).expect("Failed to write llms.txt");
+    println!("    llms.txt -> dist/llms.txt");
+
     // Generate sitemap.xml
     let mut sitemap = String::from(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
