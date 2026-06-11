@@ -39,6 +39,7 @@ fn main() {
     // Start the server
     let mut server = Command::new(&server_bin)
         .env("LEPTOS_SITE_ADDR", format!("127.0.0.1:{port}"))
+        .env("LEPTOS_HASH_FILES", "true")
         .spawn()
         .unwrap_or_else(|e| {
             eprintln!(

@@ -102,14 +102,12 @@ bin-features = ["ssr"]
 bin-default-features = false
 lib-features = ["hydrate"]
 lib-default-features = false
-# Disabled: hash-files produces per-build hashed filenames (e.g.
-# commitbee-web.<hash>.css) and bakes them into the SSR binary via compile-time
-# env vars. That works locally with `cargo leptos watch` but breaks the static
-# prerender + GitHub Pages deploy pipeline: the prerender step emits HTML with
-# unhashed filenames while the pkg/ directory contains hashed ones, so every
-# asset 404s. Deterministic filenames are fine for a static deploy — GitHub
-# Pages handles cache headers.
-hash-files = false
+# hash-files appends content hashes to pkg/ filenames (cache busting + ensures
+# pre-rendered HTML always references the exact assets it was built with).
+# The prerender binary must spawn the server with LEPTOS_HASH_FILES=true —
+# cargo-leptos injects that env var itself, a bare Command::new does not
+# (this was the original reason hashing appeared "broken" and was disabled).
+hash-files = true
 
 [[bin]]
 name = "prerender"
