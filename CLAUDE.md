@@ -53,6 +53,7 @@ mise run build        # Production build (server + WASM)
 | `ScrollReveal` | `#[component]` | No | Wraps children in `.reveal` div for scroll animation |
 | `DocSidebar` | `#[component]` | No | Sticky docs section tree with thin scrollbar |
 | `DocToc` | `#[component]` | No | Right-side table of contents |
+| `SeoMeta` | `#[component]` | No | `<title>`, canonical URL, and OpenGraph meta tags per page |
 
 ## Commands
 
@@ -90,7 +91,8 @@ Valid sections: `Basics`, `Usage`, `Internals`, `Integration`, `Reference`
 2. **Router is NOT hydrated** — All `<a>` links trigger full browser navigation (server round-trips). `leptos_router` provides SSR-side routing only. Do not use `<A>` component or expect client-side nav.
 3. **View Transitions + prefetch** — `@view-transition { navigation: auto; }` in tailwind.css gives cross-document transitions a SPA-like feel (Chrome 126+, Safari 18+). An inline prefetch script in `app.rs` pre-fetches same-origin pages on hover for near-instant navigation.
 4. **Build-time content** — Markdown processed by `build.rs` into `const` statics via `include!` — zero runtime cost
-5. **Cross-platform prerender** — `src/bin/prerender.rs` uses only `std` (TcpStream HTTP/1.0, no shell deps). Override port with `PRERENDER_PORT` env var.
+5. **Cross-platform prerender** — `src/bin/prerender.rs` uses only `std` (TcpStream HTTP/1.0, no shell deps). Routes render to `route.html` (not `route/index.html`) — GitHub Pages serves these as no-trailing-slash URLs (200, no redirect). Override port with `PRERENDER_PORT` env var.
+8. **Asset hashing (`hash-files = true`)** — `cargo-leptos` appends content hashes to `pkg/` filenames and injects `LEPTOS_HASH_FILES=true` into the server process it manages. The prerender binary spawns the server directly via `Command::new`, so it must pass `.env("LEPTOS_HASH_FILES", "true")` explicitly — otherwise the server renders HTML referencing un-hashed filenames while `pkg/` contains hashed ones, causing 404s on every asset.
 6. **Self-hosted fonts** — Inter (UI), JetBrains Mono (code), Archia (docs `.prose` body) in `public/fonts/`, no external font CDN
 7. **Three load-bearing inline scripts in `app.rs`** — Must execute before WASM hydration, never move to islands: (1) theme class application (prevents FOUC), (2) scroll-reveal IntersectionObserver (reveals above-fold content instantly), (3) link prefetch on hover
 
